@@ -135,67 +135,36 @@ button, a, input, select { -webkit-tap-highlight-color: transparent; }
   }
 }
 
-/* HOSTELHUB FIX — RESTORE HOSTEL CARD BACKGROUNDS */
+
+/* HOSTELHUB — CLEAN HOSTEL CARD DESIGN */
 
 .hostel-image {
+  position: relative;
+  overflow: hidden;
+  background-color: #f3f4f6;
   background-position: center;
   background-size: cover;
   background-repeat: no-repeat;
-  background-color: #e8edf0;
 }
 
+/* Clean neutral backgrounds until photos are added */
 .hostel-image-one {
-  background-image: linear-gradient(135deg, #b8d5c4, #edf2e7) !important;
+  background-image: linear-gradient(135deg, #f3f4f6, #e5e7eb) !important;
 }
 
 .hostel-image-two {
-  background-image: linear-gradient(135deg, #e4c9b8, #f7ede4) !important;
+  background-image: linear-gradient(135deg, #f9fafb, #e5e7eb) !important;
 }
 
 .hostel-image-three {
-  background-image: linear-gradient(135deg, #c5cce2, #eef0f7) !important;
+  background-image: linear-gradient(135deg, #eef2f7, #e5e7eb) !important;
 }
 
-/* Restore the decorative shapes */
+/* Remove the old decorative shapes */
 .hostel-image::before,
 .hostel-image::after {
-  display: block;
-}
-
-.hostel-image::before {
-  content: "";
-  position: absolute;
-  width: 38%;
-  height: 63%;
-  left: 12%;
-  top: 19%;
-  background: #ffffff73;
-  border: 1px solid #ffffff9c;
-  border-radius: 4px;
-}
-
-.hostel-image::after {
-  content: "";
-  position: absolute;
-  width: 24%;
-  height: 47%;
-  right: 12%;
-  top: 28%;
-  background: #6f8c7c44;
-  border: 1px solid #ffffff9c;
-  border-radius: 4px;
-}
-
-.hostel-image-two::after {
-  background: #ad8e7944;
-}
-
-.hostel-image-three::after {
-  background: #7785ae44;
-}
-
-.hostel-image .image-emoji {
-  display: block;
+  display: none;
+  content: none;
 }
 
 /* TEMPORARY TEST — REMOVE AFTER CHECKING */

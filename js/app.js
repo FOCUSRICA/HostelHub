@@ -5,7 +5,7 @@ const searchForm = document.getElementById("hostel-search-form");
 const searchQuery = document.getElementById("search-query");
 const roomType = document.getElementById("room-type");
 
-const newHostelSearch = document.getElementById("hostel-search");
+const newHostelSearch = document.getElementById("hostel-search-input");
 const locationFilter = document.getElementById("hostel-location-filter");
 const typeFilter = document.getElementById("hostel-type-filter");
 const resetFilters = document.getElementById("hostel-reset-filters");

@@ -167,9 +167,3 @@ button, a, input, select { -webkit-tap-highlight-color: transparent; }
   content: none;
 }
 
-/* TEMPORARY TEST — REMOVE AFTER CHECKING */
-.hostel-grid .hostel-image {
-  background: #ffeb3b !important;
-  background-image: none !important;
-  min-height: 220px !important;
-}

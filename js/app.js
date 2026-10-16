@@ -33,44 +33,96 @@ mainNav.querySelectorAll("a").forEach(link => {
   });
 });
 
-searchForm.addEventListener("submit", event => {
-  event.preventDefault();
-  const query = searchQuery.value.trim().toLowerCase();
-  const type = roomType.value;
+
+function filterHostels() {
+  const query = (
+    newHostelSearch?.value ||
+    searchQuery?.value ||
+    ""
+  ).trim().toLowerCase();
+
+  const location = (locationFilter?.value || "").toLowerCase();
+  const selectedType = typeFilter?.value || "";
+  const oldType = roomType?.value || "all";
+
   let visibleCount = 0;
 
   hostelCards.forEach(card => {
-    const matchesLocation = !query || card.dataset.location.includes(query) ||
-      card.querySelector("h3").textContent.toLowerCase().includes(query);
-    const matchesType = type === "all" || card.dataset.type === type;
-    const visible = matchesLocation && matchesType;
+    const cardLocation = (card.dataset.location || "").toLowerCase();
+    const cardType = (card.dataset.type || "").toLowerCase();
+    const cardName = card.querySelector("h3")?.textContent.toLowerCase() || "";
+    const cardText = card.textContent.toLowerCase();
+
+    const matchesSearch =
+      !query ||
+      cardLocation.includes(query) ||
+      cardName.includes(query) ||
+      cardText.includes(query);
+
+    const matchesLocation =
+      !location || cardLocation.includes(location);
+
+    const matchesNewType =
+      !selectedType || cardType === selectedType;
+
+    const matchesOldType =
+      oldType === "all" || cardType === oldType.toLowerCase();
+
+    const visible =
+      matchesSearch &&
+      matchesLocation &&
+      matchesNewType &&
+      matchesOldType;
+
     card.hidden = !visible;
+
     if (visible) visibleCount++;
   });
 
-  emptyState.hidden = visibleCount !== 0;
-  searchNote.textContent = `${visibleCount} sample listing${visibleCount === 1 ? "" : "s"} shown. These are demo listings, not live availability.`;
-});
+  if (emptyState) {
+    emptyState.hidden = visibleCount !== 0;
+  }
 
-function openListing(name) {
-  dialogTitle.textContent = name;
-  if (typeof listingDialog.showModal === "function") listingDialog.showModal();
-  else alert(`${name}\n\nThis is a sample listing. Live applications will be added later.`);
+  const message =
+    `${visibleCount} sample listing${visibleCount === 1 ? "" : "s"} shown. ` +
+    "These are demo listings, not live availability.";
+
+  if (searchNote) {
+    searchNote.textContent = message;
+  }
+
+  if (resultsCount) {
+    resultsCount.textContent = visibleCount === hostelCards.length
+      ? `Showing all ${visibleCount} sample listings`
+      : message;
+  }
 }
 
-document.querySelectorAll(".apply-demo").forEach(button => {
-  button.addEventListener("click", () => openListing(button.dataset.hostel));
+// Update results as the student types or changes a filter.
+newHostelSearch?.addEventListener("input", filterHostels);
+locationFilter?.addEventListener("change", filterHostels);
+typeFilter?.addEventListener("change", filterHostels);
+
+// Keep the previous search controls working if they still exist.
+searchForm?.addEventListener("submit", event => {
+  event.preventDefault();
+  filterHostels();
 });
 
-document.getElementById("dialog-close").addEventListener("click", () => listingDialog.close());
-document.getElementById("dialog-ok").addEventListener("click", () => listingDialog.close());
+searchQuery?.addEventListener("input", filterHostels);
+roomType?.addEventListener("change", filterHostels);
 
-document.querySelectorAll('a[href="#sign-in"], a[href="#apply"]').forEach(link => {
-  link.addEventListener("click", event => {
-    const target = document.querySelector(link.getAttribute("href"));
-    if (target) {
-      event.preventDefault();
-      target.scrollIntoView({ behavior: "smooth", block: "center" });
-    }
-  });
+// Reset the new filters.
+resetFilters?.addEventListener("click", () => {
+  if (newHostelSearch) newHostelSearch.value = "";
+  if (locationFilter) locationFilter.value = "";
+  if (typeFilter) typeFilter.value = "";
+
+  if (searchQuery) searchQuery.value = "";
+  if (roomType) roomType.value = "all";
+
+  filterHostels();
 });
+
+filterHostels();
+

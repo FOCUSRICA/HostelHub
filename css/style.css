@@ -343,3 +343,123 @@ button, a, input, select { -webkit-tap-highlight-color: transparent; }
     transform: none;
   }
 }
+
+/* HOSTELHUB — SEARCH AND LOCATION FILTERS */
+
+.hostel-search-panel {
+  display: grid;
+  grid-template-columns: minmax(220px, 2fr) minmax(150px, 1fr) minmax(150px, 1fr) auto;
+  gap: 12px;
+  align-items: end;
+  padding: 16px;
+  margin: 22px 0 10px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.04);
+}
+
+.hostel-search-input {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  padding: 0 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 9px;
+  background: #ffffff;
+}
+
+.hostel-search-input span {
+  color: #64748b;
+  font-size: 23px;
+}
+
+.hostel-search-input input {
+  width: 100%;
+  min-width: 0;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: #111827;
+  font: inherit;
+}
+
+.hostel-search-input:focus-within,
+.hostel-filter select:focus {
+  border-color: #0f766e;
+  outline: 2px solid rgba(15, 118, 110, 0.12);
+}
+
+.hostel-filter {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.hostel-filter label {
+  color: #374151;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.hostel-filter select {
+  width: 100%;
+  height: 46px;
+  padding: 0 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 9px;
+  background: #ffffff;
+  color: #111827;
+  font: inherit;
+}
+
+.hostel-reset {
+  height: 46px;
+  padding: 0 14px;
+  border: 1px solid #d1d5db;
+  border-radius: 9px;
+  background: #f9fafb;
+  color: #374151;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.hostel-reset:hover {
+  background: #f3f4f6;
+}
+
+.hostel-results-count {
+  margin: 0 0 16px;
+  color: #64748b;
+  font-size: 13px;
+}
+
+@media (max-width: 760px) {
+  .hostel-search-panel {
+    grid-template-columns: 1fr 1fr;
+    padding: 12px;
+    gap: 12px;
+  }
+
+  .hostel-search-input {
+    grid-column: 1 / -1;
+  }
+
+  .hostel-reset {
+    width: 100%;
+  }
+}
+
+@media (max-width: 420px) {
+  .hostel-search-panel {
+    grid-template-columns: 1fr;
+  }
+
+  .hostel-search-input {
+    grid-column: auto;
+  }
+}

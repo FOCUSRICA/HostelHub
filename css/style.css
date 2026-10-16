@@ -169,3 +169,75 @@ button, a, input, select { -webkit-tap-highlight-color: transparent; }
   opacity: 0 !important;
   pointer-events: none;
 }
+
+/* HOSTELHUB — PROFESSIONAL HOSTEL IMAGE CARDS */
+
+/* Image container */
+.hostel-image {
+  position: relative;
+  width: 100%;
+  height: 210px;
+  overflow: hidden;
+  background-color: #f3f4f6;
+  border-radius: 12px 12px 0 0;
+}
+
+/* Support hostel images inside the container */
+.hostel-image img,
+.hostel-image-one img,
+.hostel-image-two img,
+.hostel-image-three img,
+.hostel-image-four img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  transition: transform 0.3s ease;
+}
+
+/* Gentle zoom on hover */
+.hostel-image:hover img,
+.hostel-image-one:hover img,
+.hostel-image-two:hover img,
+.hostel-image-three:hover img,
+.hostel-image-four:hover img {
+  transform: scale(1.04);
+}
+
+/* Keep hostel cards neat */
+.hostel-card {
+  overflow: hidden;
+  border-radius: 14px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.06);
+  transition: box-shadow 0.25s ease,
+              transform 0.25s ease;
+}
+
+/* Subtle card hover */
+.hostel-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.10);
+}
+
+/* Consistent card content spacing */
+.hostel-card .hostel-details {
+  padding: 14px;
+}
+
+/* Responsive images on phones */
+@media (max-width: 600px) {
+  .hostel-image {
+    height: 190px;
+  }
+
+  .hostel-card {
+    border-radius: 12px;
+  }
+
+  .hostel-card .hostel-details {
+    padding: 12px;
+  }
+}

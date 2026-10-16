@@ -136,34 +136,36 @@ button, a, input, select { -webkit-tap-highlight-color: transparent; }
 }
 
 
-/* HOSTELHUB — CLEAN HOSTEL CARD DESIGN */
 
-.hostel-image {
+/* HOSTELHUB — REMOVE YELLOW FROM HOSTEL CARDS */
+
+.hostel-image,
+.hostel-image-one,
+.hostel-image-two,
+.hostel-image-three,
+.hostel-image-four {
   position: relative;
   overflow: hidden;
-  background-color: #f3f4f6;
+  background-color: #f3f4f6 !important;
+  background-image: none !important;
   background-position: center;
   background-size: cover;
   background-repeat: no-repeat;
 }
 
-/* Clean neutral backgrounds until photos are added */
-.hostel-image-one {
-  background-image: linear-gradient(135deg, #f3f4f6, #e5e7eb) !important;
-}
-
-.hostel-image-two {
-  background-image: linear-gradient(135deg, #f9fafb, #e5e7eb) !important;
-}
-
-.hostel-image-three {
-  background-image: linear-gradient(135deg, #eef2f7, #e5e7eb) !important;
-}
-
-/* Remove the old decorative shapes */
+/* Remove colored overlays */
 .hostel-image::before,
-.hostel-image::after {
-  display: none;
-  content: none;
+.hostel-image::after,
+.hostel-image-one::before,
+.hostel-image-one::after,
+.hostel-image-two::before,
+.hostel-image-two::after,
+.hostel-image-three::before,
+.hostel-image-three::after,
+.hostel-image-four::before,
+.hostel-image-four::after {
+  background: transparent !important;
+  background-image: none !important;
+  opacity: 0 !important;
+  pointer-events: none;
 }
-

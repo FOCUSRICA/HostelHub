@@ -126,3 +126,48 @@ resetFilters?.addEventListener("click", () => {
 
 filterHostels();
 
+/* HOSTELHUB — VIEW DETAILS BUTTONS */
+
+function openListing(name) {
+  const dialog = document.getElementById("listing-dialog");
+  const title = document.getElementById("dialog-title");
+
+  if (!dialog || !title) {
+    console.error("Listing dialog or title was not found.");
+    return;
+  }
+
+  title.textContent = name || "Hostel details";
+
+  if (typeof dialog.showModal === "function") {
+    dialog.showModal();
+  } else {
+    alert(
+      (name || "Hostel details") +
+      "\n\nThis is a demonstration listing. Live applications will be added later."
+    );
+  }
+}
+
+/* Connect every View details button */
+document.querySelectorAll(".apply-demo").forEach(button => {
+  button.addEventListener("click", function () {
+    openListing(
+      this.dataset.hostel ||
+      this.closest(".hostel-card")?.querySelector("h3")?.textContent ||
+      "Hostel details"
+    );
+  });
+});
+
+/* Close the listing dialog */
+const detailsDialog = document.getElementById("listing-dialog");
+
+document.getElementById("dialog-close")?.addEventListener("click", () => {
+  detailsDialog?.close();
+});
+
+document.getElementById("dialog-ok")?.addEventListener("click", () => {
+  detailsDialog?.close();
+});
+

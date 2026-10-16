@@ -55,6 +55,48 @@
         <div><p class="eyebrow">A PLACE THAT FITS</p><h2>Explore accommodation</h2><p class="section-description">Preview listings from our sample directory. Actual hostels will be added when the database is connected.</p></div>
         <a class="text-link" href="#hostels">Browse listings <span aria-hidden="true">→</span></a>
       </div>
+      
+<div class="hostel-search-panel">
+  <div class="hostel-search-input">
+    <span aria-hidden="true">⌕</span>
+    <input
+      type="search"
+      id="hostel-search"
+      placeholder="Search by hostel or location..."
+      aria-label="Search hostels by name or location"
+    >
+  </div>
+
+  <div class="hostel-filter">
+    <label for="hostel-location-filter">Location</label>
+    <select id="hostel-location-filter">
+      <option value="">All locations</option>
+      <option value="lilongwe">Lilongwe</option>
+      <option value="area 18">Area 18</option>
+      <option value="city centre">City Centre</option>
+      <option value="zomba">Zomba</option>
+      <option value="university area">University Area</option>
+    </select>
+  </div>
+
+  <div class="hostel-filter">
+    <label for="hostel-type-filter">Room type</label>
+    <select id="hostel-type-filter">
+      <option value="">All room types</option>
+      <option value="shared room">Shared room</option>
+      <option value="single room">Single room</option>
+      <option value="self-contained">Self-contained</option>
+    </select>
+  </div>
+
+  <button type="button" id="hostel-reset-filters" class="hostel-reset">
+    Reset filters
+  </button>
+</div>
+
+<p id="hostel-results-count" class="hostel-results-count"
+   aria-live="polite">Showing all sample listings</p>
+
       <div class="hostel-grid" id="hostel-grid">
         <article class="hostel-card" data-location="lilongwe area 18" data-type="Shared room">
          

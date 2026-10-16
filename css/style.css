@@ -135,8 +135,6 @@ button, a, input, select { -webkit-tap-highlight-color: transparent; }
   }
 }
 
-
-
 /* HOSTELHUB — REMOVE YELLOW FROM HOSTEL CARDS */
 
 .hostel-image,
@@ -239,5 +237,43 @@ button, a, input, select { -webkit-tap-highlight-color: transparent; }
 
   .hostel-card .hostel-details {
     padding: 12px;
+  }
+}
+
+/* HOSTELHUB — DISPLAY ACTUAL HOSTEL PHOTOS */
+
+.hostel-image {
+  position: relative;
+  height: 210px;
+  overflow: hidden;
+  background: #f3f4f6;
+}
+
+.hostel-image img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.hostel-image .image-tag,
+.hostel-image .image-emoji {
+  position: absolute;
+  z-index: 2;
+}
+
+.hostel-image .image-tag {
+  top: 12px;
+  left: 12px;
+}
+
+.hostel-image .image-emoji {
+  display: none;
+}
+
+@media (max-width: 600px) {
+  .hostel-image {
+    height: 190px;
   }
 }

@@ -1,11 +1,20 @@
 const menuToggle = document.getElementById("menu-toggle");
 const mainNav = document.getElementById("main-nav");
-const searchForm = document.getElementById("hostel-search");
+
+const searchForm = document.getElementById("hostel-search-form");
 const searchQuery = document.getElementById("search-query");
 const roomType = document.getElementById("room-type");
+
+const newHostelSearch = document.getElementById("hostel-search");
+const locationFilter = document.getElementById("hostel-location-filter");
+const typeFilter = document.getElementById("hostel-type-filter");
+const resetFilters = document.getElementById("hostel-reset-filters");
+const resultsCount = document.getElementById("hostel-results-count");
+
 const hostelCards = [...document.querySelectorAll(".hostel-card")];
 const emptyState = document.getElementById("empty-state");
 const searchNote = document.getElementById("search-note");
+
 const listingDialog = document.getElementById("listing-dialog");
 const dialogTitle = document.getElementById("dialog-title");
 

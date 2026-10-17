@@ -1590,3 +1590,251 @@ a {
     padding: 16px;
   }
 }
+
+/* =========================================
+   HOSTELHUB — PROFESSIONAL ACCOMMODATION CARDS
+   ========================================= */
+
+/* LISTINGS GRID */
+.hostels-grid,
+.hostel-grid,
+#hostel-listings,
+.hostel-listings {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: stretch;
+  gap: 22px;
+}
+
+/* INDIVIDUAL CARD */
+.hostel-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  background: #ffffff;
+  box-shadow: 0 5px 18px rgba(15, 23, 42, 0.045);
+  transition: transform 0.2s ease, box-shadow 0.2s ease,
+              border-color 0.2s ease;
+}
+
+.hostel-card:hover {
+  transform: translateY(-3px);
+  border-color: #c5e4df;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.09);
+}
+
+/* HOSTEL PHOTOS */
+.hostel-card .hostel-image {
+  position: relative;
+  width: 100%;
+  height: 205px;
+  flex-shrink: 0;
+  overflow: hidden;
+  background-color: #f1f5f9;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+.hostel-card .hostel-image img,
+.hostel-card img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  transition: transform 0.35s ease;
+}
+
+.hostel-card:hover .hostel-image img,
+.hostel-card:hover img {
+  transform: scale(1.035);
+}
+
+/* SAMPLE LISTING LABEL */
+.hostel-card .listing-badge,
+.hostel-card .sample-badge {
+  position: absolute;
+  z-index: 2;
+  top: 12px;
+  left: 12px;
+  padding: 6px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.75);
+  border-radius: 7px;
+  background: rgba(255, 255, 255, 0.94);
+  color: #334155;
+  font-size: 10px;
+  font-weight: 750;
+  line-height: 1.3;
+}
+
+/* CARD CONTENT */
+.hostel-card .hostel-info,
+.hostel-card .hostel-content,
+.hostel-card .card-content {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 18px;
+}
+
+/* HOSTEL NAME */
+.hostel-card h3 {
+  margin: 0;
+  color: #172033;
+  font-size: 18px;
+  font-weight: 750;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+/* HOSTEL DESCRIPTION AND LOCATION */
+.hostel-card p {
+  margin-top: 0;
+  margin-bottom: 0;
+  color: #64748b;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.hostel-card .hostel-location,
+.hostel-card .location {
+  color: #475569;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* ROOM DETAILS AND AMENITIES */
+.hostel-card .hostel-details,
+.hostel-card .hostel-amenities,
+.hostel-card .hostel-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  width: 100%;
+}
+
+.hostel-card .hostel-details span,
+.hostel-card .hostel-amenities span,
+.hostel-card .hostel-tags span {
+  padding: 5px 9px;
+  border: 1px solid #e2e8f0;
+  border-radius: 7px;
+  background: #f8fafc;
+  color: #475569;
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+/* PRICE, IF DISPLAYED */
+.hostel-card .hostel-price,
+.hostel-card .price {
+  color: #0f766e;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+/* CARD BUTTON AREA */
+.hostel-card .hostel-actions,
+.hostel-card .card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  width: 100%;
+  margin-top: auto;
+  padding-top: 8px;
+}
+
+/* BUTTONS */
+.hostel-card button,
+.hostel-card .button {
+  min-height: 42px;
+  padding: 10px 14px;
+  border-radius: 9px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.3;
+  cursor: pointer;
+}
+
+.hostel-card .apply-demo {
+  border: 1px solid #0f766e;
+  background: #0f766e;
+  color: #ffffff;
+  transition: background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.hostel-card .apply-demo:hover {
+  background: #115e59;
+  box-shadow: 0 4px 10px rgba(15, 118, 110, 0.15);
+}
+
+/* TABLET */
+@media (max-width: 900px) {
+  .hostels-grid,
+  .hostel-grid,
+  #hostel-listings,
+  .hostel-listings {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+  }
+
+  .hostel-card .hostel-image {
+    height: 190px;
+  }
+}
+
+/* MOBILE */
+@media (max-width: 600px) {
+  .hostels-grid,
+  .hostel-grid,
+  #hostel-listings,
+  .hostel-listings {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 17px;
+  }
+
+  .hostel-card {
+    border-radius: 14px;
+  }
+
+  .hostel-card .hostel-image {
+    height: 220px;
+  }
+
+  .hostel-card .hostel-info,
+  .hostel-card .hostel-content,
+  .hostel-card .card-content {
+    padding: 16px;
+  }
+
+  .hostel-card h3 {
+    font-size: 17px;
+  }
+
+  .hostel-card .hostel-actions,
+  .hostel-card .card-actions {
+    gap: 8px;
+  }
+
+  .hostel-card button,
+  .hostel-card .button {
+    min-height: 44px;
+  }
+}
+
+/* ACCESSIBILITY */
+@media (prefers-reduced-motion: reduce) {
+  .hostel-card,
+  .hostel-card img,
+  .hostel-card .apply-demo {
+    transition: none;
+  }
+}

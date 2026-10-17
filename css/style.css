@@ -2181,3 +2181,74 @@ a {
     margin-left: 0;
   }
 }
+
+/* HOSTELHUB — HEADER AND NAVIGATION POLISH */
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(255, 255, 255, 0.97);
+  border-bottom: 1px solid #e5e7eb;
+  backdrop-filter: blur(12px);
+}
+
+.main-nav {
+  align-items: center;
+  gap: 10px;
+}
+
+.main-nav > a:not(.button) {
+  color: #374151;
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.main-nav > a:not(.button):hover {
+  color: #0f766e;
+}
+
+.main-nav > .nav-login {
+  padding: 9px 13px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+}
+
+.main-nav > .nav-login:hover {
+  background: #f9fafb;
+}
+
+.main-nav > .nav-apply {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  padding: 10px 15px;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.menu-toggle {
+  cursor: pointer;
+}
+
+@media (max-width: 768px) {
+  .main-nav {
+    gap: 8px;
+  }
+
+  .main-nav > a:not(.button) {
+    font-size: 0.88rem;
+  }
+
+  .main-nav > .nav-login,
+  .main-nav > .nav-apply {
+    width: 100%;
+    box-sizing: border-box;
+    text-align: center;
+  }
+}

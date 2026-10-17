@@ -1,6 +1,5 @@
-import {
-  initializeApp
-} from "https://www.gstatic.com/firebasejs/13.0.0/firebase-app.js";
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-app.js";
 
 import {
   getAuth,
@@ -8,9 +7,7 @@ import {
   browserLocalPersistence
 } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-auth.js";
 
-import {
-  getDatabase
-} from "https://www.gstatic.com/firebasejs/13.0.0/firebase-database.js";
+import { getDatabase } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-database.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCNLkky1xDpGJzdP8NGWZ-iGJMwKMTDQ8E",

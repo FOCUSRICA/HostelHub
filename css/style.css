@@ -2456,3 +2456,92 @@ margin-bottom: 20px;
 gap: 16px;
 }
 }
+/* HOSTELHUB — APPLICATIONS CTA */
+
+.cta-section {
+width: calc(100% - 32px);
+max-width: 900px;
+margin: 32px auto;
+padding: 32px 24px;
+box-sizing: border-box;
+text-align: center;
+background: #f8fafc;
+border: 1px solid #e5e7eb;
+border-radius: 16px;
+}
+
+.cta-section .eyebrow {
+margin: 0 0 12px;
+color: #2563eb;
+font-size: 12px;
+font-weight: 700;
+letter-spacing: 1.2px;
+line-height: 1.6;
+}
+
+.cta-section h2 {
+max-width: 600px;
+margin: 0 auto 12px;
+color: #111827;
+font-size: clamp(25px, 4vw, 34px);
+font-weight: 700;
+line-height: 1.25;
+}
+
+.cta-section > p:not(.eyebrow) {
+max-width: 540px;
+margin: 0 auto 22px;
+color: #6b7280;
+font-size: 15px;
+line-height: 1.8;
+}
+
+.cta-section .button {
+display: inline-flex;
+align-items: center;
+justify-content: center;
+gap: 10px;
+min-height: 46px;
+padding: 12px 22px;
+box-sizing: border-box;
+border-radius: 9px;
+font-size: 15px;
+font-weight: 600;
+text-decoration: none;
+}
+
+.cta-section .button-primary {
+background: #2563eb;
+color: #ffffff;
+}
+
+.cta-section .button-primary:hover {
+background: #1d4ed8;
+}
+
+.cta-section .button:focus-visible {
+outline: 3px solid #93c5fd;
+outline-offset: 3px;
+}
+
+@media (max-width: 600px) {
+.cta-section {
+width: calc(100% - 28px);
+margin: 24px auto;
+padding: 26px 18px;
+border-radius: 12px;
+}
+
+.cta-section h2 {
+font-size: 26px;
+}
+
+.cta-section > p:not(.eyebrow) {
+font-size: 14px;
+line-height: 1.7;
+}
+
+.cta-section .button {
+width: 100%;
+}
+}

@@ -2545,3 +2545,120 @@ line-height: 1.7;
 width: 100%;
 }
 }
+
+/* HOSTELHUB — STUDENT APPLICATIONS */
+
+[hidden] {
+  display: none !important;
+}
+
+.application-section {
+  padding: 44px 20px;
+  background: #f8fafc;
+  scroll-margin-top: 90px;
+}
+
+.application-inner {
+  max-width: 620px;
+  margin: 0 auto;
+  padding: 28px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
+}
+
+.application-inner h2 {
+  margin: 8px 0;
+  color: #111827;
+  font-size: clamp(1.5rem, 3vw, 1.9rem);
+}
+
+.application-inner h3 {
+  margin: 20px 0 12px;
+  color: #1f2937;
+}
+
+#application-form {
+  display: grid;
+  gap: 17px;
+  margin-top: 22px;
+}
+
+#application-form select,
+#application-form input {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 45px;
+  padding: 11px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #111827;
+  font: inherit;
+}
+
+#application-form select:focus,
+#application-form input:focus {
+  outline: 2px solid rgba(15, 118, 110, 0.2);
+  border-color: #0f766e;
+}
+
+#application-form button:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+#application-feedback,
+#application-status-message,
+#account-feedback {
+  color: #4b5563;
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.application-divider {
+  height: 1px;
+  margin: 26px 0;
+  background: #e5e7eb;
+}
+
+#application-status-list {
+  display: grid;
+  gap: 12px;
+  padding-left: 0;
+  list-style: none;
+}
+
+#application-status-list li {
+  padding: 15px;
+  border: 1px solid #e5e7eb;
+  border-radius: 9px;
+  background: #ffffff;
+}
+
+#application-status-list p {
+  margin: 7px 0 0;
+  color: #0f766e;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+#dialog-apply {
+  margin-right: 8px;
+}
+
+@media (max-width: 600px) {
+  .application-section {
+    padding: 26px 12px;
+  }
+
+  .application-inner {
+    padding: 20px 16px;
+    border-radius: 11px;
+  }
+
+  #dialog-apply {
+    margin: 0 0 8px;
+  }
+}

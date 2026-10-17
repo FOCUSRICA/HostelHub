@@ -2325,3 +2325,134 @@ padding: 28px 16px;
 max-width: 100%;
 }
 }
+/* HOSTELHUB — SIGN IN REFINEMENT */
+
+.signin-note {
+width: 100%;
+box-sizing: border-box;
+padding: 36px 16px;
+}
+
+.signin-content {
+width: 100%;
+max-width: 440px;
+margin: 0 auto;
+box-sizing: border-box;
+}
+
+.signin-content h2 {
+margin: 8px 0 10px;
+color: #111827;
+font-size: clamp(24px, 5vw, 32px);
+line-height: 1.25;
+font-weight: 700;
+}
+
+.signin-description {
+margin: 0 0 24px;
+color: #6b7280;
+font-size: 15px;
+line-height: 1.7;
+}
+
+.signin-form {
+display: flex;
+flex-direction: column;
+gap: 18px;
+}
+
+.signin-form .form-group {
+display: flex;
+flex-direction: column;
+gap: 7px;
+}
+
+.signin-form label {
+color: #374151;
+font-size: 14px;
+font-weight: 600;
+}
+
+.signin-form input {
+display: block;
+width: 100%;
+min-height: 46px;
+padding: 12px 14px;
+box-sizing: border-box;
+border: 1px solid #d1d5db;
+border-radius: 9px;
+background: #fff;
+color: #111827;
+font-family: inherit;
+font-size: 16px;
+transition: border-color 0.2s ease,
+box-shadow 0.2s ease;
+}
+
+.signin-form input::placeholder {
+color: #9ca3af;
+}
+
+.signin-form input:focus {
+outline: none;
+border-color: #2563eb;
+box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+.signin-form .signin-button {
+width: 100%;
+min-height: 46px;
+margin-top: 2px;
+border-radius: 9px;
+font-size: 15px;
+font-weight: 600;
+}
+
+.signin-feedback {
+margin: 0;
+color: #4b5563;
+font-size: 13px;
+line-height: 1.6;
+}
+
+.signin-divider {
+height: 1px;
+margin: 24px 0 18px;
+background: #e5e7eb;
+}
+
+.application-prompt {
+margin: 0;
+color: #6b7280;
+font-size: 14px;
+line-height: 1.7;
+text-align: center;
+}
+
+.application-prompt a {
+color: #2563eb;
+font-weight: 600;
+text-decoration: none;
+}
+
+.application-prompt a:hover {
+text-decoration: underline;
+}
+
+@media (max-width: 600px) {
+.signin-note {
+padding: 26px 18px;
+}
+
+.signin-content h2 {
+font-size: 26px;
+}
+
+.signin-description {
+margin-bottom: 20px;
+}
+
+.signin-form {
+gap: 16px;
+}
+}

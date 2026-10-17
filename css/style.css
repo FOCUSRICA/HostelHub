@@ -2760,3 +2760,54 @@ width: 100%;
     margin-top: 5px;
   }
 }
+
+/* HOSTELHUB — PC NAVIGATION CORRECTION */
+@media (min-width: 761px) {
+  .site-header {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 20px !important;
+    flex-wrap: nowrap !important;
+    position: relative;
+  }
+
+  .brand {
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+
+  .main-nav {
+    display: flex !important;
+    position: static !important;
+    flex: 1 1 auto !important;
+    flex-direction: row !important;
+    justify-content: flex-end !important;
+    align-items: center !important;
+    flex-wrap: nowrap !important;
+    gap: clamp(8px, 1.2vw, 18px) !important;
+    width: auto !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+  }
+
+  .main-nav > a {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    white-space: nowrap;
+    font-size: 13px;
+  }
+
+  .main-nav > .nav-apply {
+    padding: 11px 14px;
+  }
+
+  .menu-toggle {
+    display: none !important;
+  }
+}

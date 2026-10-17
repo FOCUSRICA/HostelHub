@@ -162,7 +162,56 @@
       <p class="eyebrow">READY FOR YOUR NEXT CHAPTER?</p><h2>Your space is out there.</h2><p>Create an account in a future release to apply for accommodation and manage your rent.</p><a class="button button-primary" href="#sign-in">Get started <span aria-hidden="true">→</span></a>
     </section>
 
-    <section class="signin-note" id="sign-in"><strong>Sign-in and applications are not active yet.</strong><p>This first step is a visual prototype. We'll connect secure student accounts and real applications after the project structure is ready.</p></section>
+       <section class="signin-note" id="sign-in">
+      <div class="signin-content">
+        <p class="eyebrow">WELCOME TO HOSTELHUB</p>
+        <h2>Student sign in</h2>
+        <p class="signin-description">
+          Your next chapter starts with the right place to stay.
+        </p>
+
+        <form class="signin-form" id="signin-form">
+          <div class="form-group">
+            <label for="signin-email">Email address</label>
+            <input
+              type="email"
+              id="signin-email"
+              name="email"
+              placeholder="Enter your student email"
+              autocomplete="email"
+              required
+            >
+          </div>
+
+          <div class="form-group">
+            <label for="signin-password">Password</label>
+            <input
+              type="password"
+              id="signin-password"
+              name="password"
+              placeholder="Enter your password"
+              autocomplete="current-password"
+              required
+            >
+          </div>
+
+          <button type="submit" class="button button-primary signin-button">
+            Sign in
+          </button>
+
+          <p class="signin-feedback" id="signin-feedback" role="status">
+            Student account sign-in will be available in a future release.
+          </p>
+        </form>
+
+        <div class="signin-divider"></div>
+
+        <p class="application-prompt">
+          Looking for accommodation?
+          <a href="#apply">Explore the application process</a>
+        </p>
+      </div>
+    </section>
   </main>
 
   <footer class="site-footer"><a class="brand footer-brand" href="#"><span class="brand-mark">H</span> Hostel<span>Hub</span></a><p>Student accommodation, made clearer.</p><small>© <span id="year"></span> HostelHub · Prototype</small></footer>

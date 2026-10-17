@@ -84,24 +84,60 @@ function populateHostels() {
 
 populateHostels();
 
-/* Switch from registration to sign-in if needed. */
+
+/* Register first, then require manual sign-in. */
 registerForm?.addEventListener("submit", async event => {
   event.preventDefault();
 
-  const email = byId("register-email").value.trim();
-  const password = byId("register-password").value;
+  const email = byId("register-email")?.value.trim();
+  const password = byId("register-password")?.value;
+
+  if (!email || !password) {
+    showMessage(
+      "register-feedback",
+      "Please enter your email and password."
+    );
+    return;
+  }
 
   showMessage("register-feedback", "Creating your account...");
 
   try {
     await authReady;
-    await createUserWithEmailAndPassword(auth, email, password);
+
+    // Create the student's Firebase account.
+    const credential = await createUserWithEmailAndPassword(
+      auth,
+      email,
+      password
+    );
+
+    // Firebase signs the student in automatically.
+    // Sign them out so they must use the Sign In form.
+    await signOut(credential.user);
 
     registerForm.reset();
-    showMessage("register-feedback", "Account created successfully.");
+
+    showMessage(
+      "register-feedback",
+      "Registration successful! Please sign in with your email and password."
+    );
+
+    // Return to the Sign In section.
+    byId("signin-form")?.scrollIntoView({
+      behavior: "smooth",
+      block: "center"
+    });
+
+    byId("signin-email")?.focus();
+
   } catch (error) {
     console.error("Registration failed:", error);
-    showMessage("register-feedback", friendlyError(error));
+
+    showMessage(
+      "register-feedback",
+      friendlyError(error)
+    );
   }
 });
 

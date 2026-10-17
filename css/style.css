@@ -1838,3 +1838,221 @@ a {
     transition: none;
   }
 }
+/* =========================================
+   HOSTELHUB — SIGN IN & APPLICATION FORMS
+   ========================================= */
+
+/* FORM SECTION CONTAINERS */
+.sign-in-section,
+#sign-in,
+.application-section,
+#apply {
+  scroll-margin-top: 90px;
+}
+
+.sign-in-section,
+.application-section {
+  width: min(680px, calc(100% - 32px));
+  margin: 42px auto;
+}
+
+/* FORM CARDS */
+.sign-in-section .form-card,
+.application-section .form-card,
+.sign-in-card,
+.application-card {
+  padding: clamp(20px, 4vw, 32px);
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  background: #ffffff;
+  box-shadow: 0 8px 28px rgba(15, 23, 42, 0.05);
+}
+
+/* FORM HEADINGS */
+.sign-in-section h2,
+#sign-in h2,
+.application-section h2,
+#apply h2 {
+  margin: 0 0 8px;
+  color: #172033;
+  font-size: clamp(23px, 4vw, 29px);
+  font-weight: 800;
+  line-height: 1.3;
+  letter-spacing: -0.6px;
+}
+
+.sign-in-section p,
+#sign-in p,
+.application-section p,
+#apply p {
+  color: #64748b;
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+/* FORM LAYOUT */
+.sign-in-section form,
+#sign-in form,
+.application-section form,
+#apply form {
+  display: grid;
+  gap: 17px;
+}
+
+/* LABELS */
+.sign-in-section label,
+#sign-in label,
+.application-section label,
+#apply label {
+  display: block;
+  margin-bottom: 6px;
+  color: #334155;
+  font-size: 13px;
+  font-weight: 650;
+}
+
+/* INPUTS AND SELECTS */
+.sign-in-section input,
+#sign-in input,
+.application-section input,
+#apply input,
+.application-section select,
+#apply select,
+.application-section textarea,
+#apply textarea {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 46px;
+  padding: 11px 13px;
+  border: 1px solid #dbe3ec;
+  border-radius: 9px;
+  outline: none;
+  background: #ffffff;
+  color: #172033;
+  font: inherit;
+  font-size: 14px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.application-section textarea,
+#apply textarea {
+  min-height: 110px;
+  resize: vertical;
+}
+
+.sign-in-section input:focus,
+#sign-in input:focus,
+.application-section input:focus,
+#apply input:focus,
+.application-section select:focus,
+#apply select:focus,
+.application-section textarea:focus,
+#apply textarea:focus {
+  border-color: #0f766e;
+  box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.12);
+}
+
+/* SUBMIT BUTTONS */
+.sign-in-section button[type="submit"],
+#sign-in button[type="submit"],
+.application-section button[type="submit"],
+#apply button[type="submit"] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 47px;
+  padding: 12px 18px;
+  border: 1px solid #0f766e;
+  border-radius: 10px;
+  background: #0f766e;
+  color: #ffffff;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 750;
+  cursor: pointer;
+  transition: background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.sign-in-section button[type="submit"]:hover,
+#sign-in button[type="submit"]:hover,
+.application-section button[type="submit"]:hover,
+#apply button[type="submit"]:hover {
+  background: #115e59;
+  box-shadow: 0 5px 14px rgba(15, 118, 110, 0.16);
+}
+
+/* FEEDBACK MESSAGES */
+#sign-in-feedback,
+#login-feedback,
+#application-feedback,
+#apply-feedback {
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+/* PASSWORD VISIBILITY BUTTON */
+.password-wrapper,
+.password-field {
+  position: relative;
+}
+
+.password-wrapper input,
+.password-field input {
+  padding-right: 54px;
+}
+
+.toggle-password {
+  position: absolute;
+  top: 50%;
+  right: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 36px;
+  padding: 0;
+  transform: translateY(-50%);
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: #475569;
+  font-size: 17px;
+  cursor: pointer;
+}
+
+.toggle-password:hover {
+  background: #f1f5f9;
+  color: #0f766e;
+}
+
+/* MOBILE FORM SPACING */
+@media (max-width: 540px) {
+  .sign-in-section,
+  .application-section {
+    width: calc(100% - 28px);
+    margin: 26px auto;
+  }
+
+  .sign-in-section .form-card,
+  .application-section .form-card,
+  .sign-in-card,
+  .application-card {
+    padding: 20px 16px;
+    border-radius: 13px;
+  }
+}
+
+/* REDUCED MOTION */
+@media (prefers-reduced-motion: reduce) {
+  .sign-in-section input,
+  #sign-in input,
+  .application-section input,
+  #apply input,
+  .sign-in-section button,
+  #sign-in button,
+  .application-section button,
+  #apply button {
+    transition: none;
+  }
+}

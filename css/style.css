@@ -2252,3 +2252,76 @@ a {
     text-align: center;
   }
 }
+/* HOSTELHUB — SIGN IN SECTION */
+
+.signin-section {
+padding: 40px 16px;
+}
+
+.signin-section .signin-container,
+.signin-section .signin-card {
+width: 100%;
+max-width: 440px;
+margin-left: auto;
+margin-right: auto;
+}
+
+.signin-section input,
+.signin-section select {
+width: 100%;
+max-width: 100%;
+min-height: 44px;
+padding: 11px 12px;
+border: 1px solid #d1d5db;
+border-radius: 8px;
+background: #ffffff;
+color: #111827;
+font-size: 16px;
+box-sizing: border-box;
+}
+
+.signin-section input:focus,
+.signin-section select:focus {
+outline: 2px solid #2563eb;
+outline-offset: 2px;
+border-color: #2563eb;
+}
+
+.signin-section button {
+min-height: 44px;
+border-radius: 8px;
+cursor: pointer;
+}
+
+.signin-feedback {
+margin-top: 12px;
+color: #374151;
+font-size: 14px;
+line-height: 1.6;
+}
+
+.application-prompt {
+margin-top: 20px;
+color: #4b5563;
+font-size: 14px;
+line-height: 1.6;
+text-align: center;
+}
+
+.application-prompt a {
+color: #2563eb;
+font-weight: 600;
+text-decoration: underline;
+text-underline-offset: 3px;
+}
+
+@media (max-width: 600px) {
+.signin-section {
+padding: 28px 16px;
+}
+
+.signin-section .signin-container,
+.signin-section .signin-card {
+max-width: 100%;
+}
+}

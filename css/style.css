@@ -1553,3 +1553,40 @@ a {
     transition: none;
   }
 }
+
+/* HOSTELHUB — SEARCH LAYOUT REFINEMENT */
+
+.hostel-search-panel {
+  padding: 20px 22px;
+  border-radius: 16px;
+}
+
+#hostel-search-input {
+  min-height: 44px;
+  border-radius: 10px;
+}
+
+#hostel-location-filter,
+#hostel-type-filter {
+  min-height: 44px;
+  border-radius: 10px;
+}
+
+#hostel-reset-filters {
+  min-height: 40px;
+  padding: 8px 18px;
+  border-radius: 9px;
+}
+
+/* Keep filter controls tidy */
+.hostel-search-panel input,
+.hostel-search-panel select {
+  font-size: 13px;
+}
+
+/* Small-screen spacing */
+@media (max-width: 540px) {
+  .hostel-search-panel {
+    padding: 16px;
+  }
+}

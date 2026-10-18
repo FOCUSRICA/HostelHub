@@ -293,12 +293,12 @@ onAuthStateChanged(auth, user => {
                 );
               }
 
-              await remove(
-                ref(
-                  db,
-                  `applications/${user.uid}/${child.key}`
-                )
-              );
+             
+await update(ref(db), {
+  [`applications/${user.uid}/${child.key}`]: null,
+  [`hostelApplications/${application.hostelId}/${user.uid}/${child.key}`]: null
+});
+
 
               showMessage(
                 "application-status-message",

@@ -164,6 +164,7 @@ signInForm?.addEventListener("submit", async event => {
   }
 });
 
+
 /* Restore the authenticated student session. */
 await authReady;
 
@@ -194,162 +195,140 @@ onAuthStateChanged(auth, user => {
 
   showMessage(
     "application-status-message",
-    signedIn ? "Loading your applications..." :
-      "Sign in to view your application status."
+    signedIn
+      ? "Loading your applications..."
+      : "Sign in to view your application status."
   );
 
   const statusList = byId("application-status-list");
-  if (statusList) statusList.replaceChildren();
 
-  if (user) {
-    const applicationsRef = ref(
-      db,
-      `applications/${user.uid}`
-    );
+  if (statusList) {
+    statusList.replaceChildren();
+  }
 
-    stopApplicationListener = onValue(
-      applicationsRef,
-      snapshot => {
-        if (statusList) statusList.replaceChildren();
+  if (!user) return;
 
-        if (!snapshot.exists()) {
-          showMessage(
-            "application-status-message",
-            "You have not submitted any applications yet."
+  const applicationsRef = ref(
+    db,
+    `applications/${user.uid}`
+  );
+
+  stopApplicationListener = onValue(
+    applicationsRef,
+    snapshot => {
+      if (statusList) {
+        statusList.replaceChildren();
+      }
+
+      if (!snapshot.exists()) {
+        showMessage(
+          "application-status-message",
+          "You have not submitted any applications yet."
+        );
+        return;
+      }
+
+      snapshot.forEach(child => {
+        const application = child.val();
+        const item = document.createElement("li");
+        const heading = document.createElement("strong");
+        const details = document.createElement("p");
+
+        heading.textContent =
+          application.hostelName || "Accommodation application";
+
+        details.textContent =
+          `Reference: ${application.reference || child.key} · Status: ${application.status || "pending"}`;
+
+        item.append(heading, details);
+
+        // Allow deletion only for pending applications.
+        if ((application.status || "pending") === "pending") {
+          const deleteButton = document.createElement("button");
+
+          deleteButton.type = "button";
+          deleteButton.textContent = "×";
+          deleteButton.className = "application-delete-button";
+          deleteButton.setAttribute(
+            "aria-label",
+            "Delete application"
           );
-          return;
+          deleteButton.title = "Delete application";
+
+          deleteButton.addEventListener("click", async () => {
+            const confirmed = window.confirm(
+              `Delete your application for "${application.hostelName || "this hostel"}"? This cannot be undone.`
+            );
+
+            if (!confirmed) return;
+
+            deleteButton.disabled = true;
+
+            try {
+              await authReady;
+
+              if (
+                !auth.currentUser ||
+                auth.currentUser.uid !== user.uid
+              ) {
+                throw new Error(
+                  "Please sign in again before deleting this application."
+                );
+              }
+
+              await remove(
+                ref(
+                  db,
+                  `applications/${user.uid}/${child.key}`
+                )
+              );
+
+              showMessage(
+                "application-status-message",
+                "Application deleted successfully."
+              );
+
+            } catch (error) {
+              console.error(
+                "Application deletion failed:",
+                error
+              );
+
+              showMessage(
+                "application-status-message",
+                error.message?.startsWith("Please sign in")
+                  ? error.message
+                  : friendlyError(error)
+              );
+
+              deleteButton.disabled = false;
+            }
+          });
+
+          details.appendChild(
+            document.createTextNode(" ")
+          );
+
+          details.appendChild(deleteButton);
         }
 
-snapshot.forEach(child => {
-  const application = child.val();
-  const item = document.createElement("li");
-  const heading = document.createElement("strong");
-  const details = document.createElement("p");
+        statusList?.appendChild(item);
+      });
 
-  heading.textContent =
-    application.hostelName || "Accommodation application";
-
-  details.textContent =
-    `Reference: ${application.reference || child.key} · Status: ${application.status || "pending"}`;
-
-  item.append(heading, details);
-
-  if ((application.status || "pending") === "pending") {
-    const deleteButton = document.createElement("button");
-
-    deleteButton.type = "button";
-    deleteButton.textContent = "×";
-    deleteButton.className = "application-delete-button";
-    deleteButton.setAttribute("aria-label", "Delete application");
-    deleteButton.title = "Delete application";
-
-    deleteButton.addEventListener("click", async () => {
-      const confirmed = window.confirm(
-        `Delete your application for "${application.hostelName || "this hostel"}"? This cannot be undone.`
+      showMessage(
+        "application-status-message",
+        "Your application records are up to date."
       );
+    },
+    error => {
+      console.error("Application tracking failed:", error);
 
-      if (!confirmed) return;
-
-      deleteButton.disabled = true;
-
-      try {
-        await authReady;
-
-        if (
-          !auth.currentUser ||
-          auth.currentUser.uid !== user.uid
-        ) {
-          throw new Error(
-            "Please sign in again before deleting this application."
-          );
-        }
-
-        await remove(
-          ref(db, `applications/${user.uid}/${child.key}`)
-        );
-
-        showMessage(
-          "application-status-message",
-          "Application deleted successfully."
-        );
-      } catch (error) {
-        console.error("Application deletion failed:", error);
-
-        showMessage(
-          "application-status-message",
-          error.message?.startsWith("Please sign in")
-            ? error.message
-            : friendlyError(error)
-        );
-
-        deleteButton.disabled = false;
-      }
-    });
-
-    details.appendChild(document.createTextNode(" "));
-    details.appendChild(deleteButton);
-  }
-
-  statusList?.appendChild(item);
-});
-
-        // Confirm the same student is still signed in.
-        if (
-          !auth.currentUser ||
-          auth.currentUser.uid !== user.uid
-        ) {
-          throw new Error(
-            "Please sign in again before deleting this application."
-          );
-        }
-
-        // Delete only this student's selected application.
-        await remove(
-          ref(db, `applications/${user.uid}/${child.key}`)
-        );
-
-        showMessage(
-          "application-status-message",
-          "Application deleted successfully."
-        );
-
-        // Firebase's existing listener refreshes the list automatically.
-      } catch (error) {
-        console.error("Application deletion failed:", error);
-
-        showMessage(
-          "application-status-message",
-          error.message?.startsWith("Please sign in")
-            ? error.message
-            : friendlyError(error)
-        );
-
-        deleteButton.disabled = false;
-        deleteButton.textContent = "Delete application";
-      }
-    });
-
-    item.appendChild(deleteButton);
-  }
-
-  statusList?.appendChild(item);
-});
-
-
-        showMessage(
-          "application-status-message",
-          "Your application records are up to date."
-        );
-      },
-      error => {
-        console.error("Application tracking failed:", error);
-        showMessage(
-          "application-status-message",
-          "Unable to load applications. Please refresh and try again."
-        );
-      }
-    );
-  }
+      showMessage(
+        "application-status-message",
+        "Unable to load applications. Please refresh and try again."
+      );
+    }
+  );
 });
 
 /* Sign out. */

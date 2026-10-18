@@ -219,22 +219,84 @@ onAuthStateChanged(auth, user => {
           return;
         }
 
-        snapshot.forEach(child => {
-          const application = child.val();
-          const item = document.createElement("li");
-          const heading = document.createElement("strong");
-          const details = document.createElement("p");
+    
+snapshot.forEach(child => {
+  const application = child.val();
+  const item = document.createElement("li");
+  const heading = document.createElement("strong");
+  const details = document.createElement("p");
 
-          heading.textContent =
-            application.hostelName || "Accommodation application";
+  heading.textContent =
+    application.hostelName || "Accommodation application";
 
-         
-details.textContent =
-  `Reference: ${application.reference || child.key} · Status: ${application.status || "pending"}`;
+  details.textContent =
+    `Reference: ${application.reference || child.key} · Status: ${application.status || "pending"}`;
 
-          item.append(heading, details);
-          statusList?.appendChild(item);
-        });
+  item.append(heading, details);
+
+  // Only show the delete button for pending applications.
+  if ((application.status || "pending") === "pending") {
+    const deleteButton = document.createElement("button");
+
+    deleteButton.type = "button";
+    deleteButton.textContent = "Delete application";
+    deleteButton.className = "application-delete-button";
+
+    deleteButton.addEventListener("click", async () => {
+      const confirmed = window.confirm(
+        `Delete your application for "${application.hostelName || "this hostel"}"? This cannot be undone.`
+      );
+
+      if (!confirmed) return;
+
+      deleteButton.disabled = true;
+      deleteButton.textContent = "Deleting...";
+
+      try {
+        await authReady;
+
+        // Confirm the same student is still signed in.
+        if (
+          !auth.currentUser ||
+          auth.currentUser.uid !== user.uid
+        ) {
+          throw new Error(
+            "Please sign in again before deleting this application."
+          );
+        }
+
+        // Delete only this student's selected application.
+        await remove(
+          ref(db, `applications/${user.uid}/${child.key}`)
+        );
+
+        showMessage(
+          "application-status-message",
+          "Application deleted successfully."
+        );
+
+        // Firebase's existing listener refreshes the list automatically.
+      } catch (error) {
+        console.error("Application deletion failed:", error);
+
+        showMessage(
+          "application-status-message",
+          error.message?.startsWith("Please sign in")
+            ? error.message
+            : friendlyError(error)
+        );
+
+        deleteButton.disabled = false;
+        deleteButton.textContent = "Delete application";
+      }
+    });
+
+    item.appendChild(deleteButton);
+  }
+
+  statusList?.appendChild(item);
+});
+
 
         showMessage(
           "application-status-message",

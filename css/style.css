@@ -2811,3 +2811,57 @@ width: 100%;
     display: none !important;
   }
 }
+
+/* HOSTELHUB — FLOATING DESKTOP NAVIGATION */
+@media (min-width: 761px) {
+  .site-header {
+    position: sticky !important;
+    top: 12px;
+    z-index: 1000;
+    width: calc(100% - 40px);
+    max-width: 1240px;
+    margin: 12px auto 24px !important;
+    padding: 14px 22px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 20px !important;
+    background: rgba(255, 255, 255, 0.94) !important;
+    border: 1px solid #e5e7eb !important;
+    border-radius: 18px !important;
+    box-shadow: 0 8px 28px rgba(15, 23, 42, 0.08) !important;
+    box-sizing: border-box;
+  }
+
+  .brand {
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+
+  .main-nav {
+    display: flex !important;
+    flex: 1 1 auto !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    gap: 16px !important;
+    position: static !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+  }
+
+  .main-nav > a {
+    display: inline-flex !important;
+    align-items: center;
+    white-space: nowrap;
+    font-size: 13px;
+  }
+
+  .menu-toggle {
+    display: none !important;
+  }
+}

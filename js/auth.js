@@ -220,7 +220,6 @@ onAuthStateChanged(auth, user => {
           return;
         }
 
-    
 snapshot.forEach(child => {
   const application = child.val();
   const item = document.createElement("li");
@@ -235,63 +234,64 @@ snapshot.forEach(child => {
 
   item.append(heading, details);
 
-  // Only show the delete button for pending applications.
- 
-if ((application.status || "pending") === "pending") {
-  const deleteButton = document.createElement("button");
+  if ((application.status || "pending") === "pending") {
+    const deleteButton = document.createElement("button");
 
-  deleteButton.type = "button";
-  deleteButton.textContent = "×";
-  deleteButton.className = "application-delete-button";
-  deleteButton.setAttribute("aria-label", "Delete application");
-  deleteButton.title = "Delete application";
+    deleteButton.type = "button";
+    deleteButton.textContent = "×";
+    deleteButton.className = "application-delete-button";
+    deleteButton.setAttribute("aria-label", "Delete application");
+    deleteButton.title = "Delete application";
 
-  deleteButton.addEventListener("click", async () => {
-    const confirmed = window.confirm(
-      `Delete your application for "${application.hostelName || "this hostel"}"? This cannot be undone.`
-    );
+    deleteButton.addEventListener("click", async () => {
+      const confirmed = window.confirm(
+        `Delete your application for "${application.hostelName || "this hostel"}"? This cannot be undone.`
+      );
 
-    if (!confirmed) return;
+      if (!confirmed) return;
 
-    deleteButton.disabled = true;
+      deleteButton.disabled = true;
 
-    try {
-      await authReady;
+      try {
+        await authReady;
 
-      if (
-        !auth.currentUser ||
-        auth.currentUser.uid !== user.uid
-      ) {
-        throw new Error(
-          "Please sign in again before deleting this application."
+        if (
+          !auth.currentUser ||
+          auth.currentUser.uid !== user.uid
+        ) {
+          throw new Error(
+            "Please sign in again before deleting this application."
+          );
+        }
+
+        await remove(
+          ref(db, `applications/${user.uid}/${child.key}`)
         );
+
+        showMessage(
+          "application-status-message",
+          "Application deleted successfully."
+        );
+      } catch (error) {
+        console.error("Application deletion failed:", error);
+
+        showMessage(
+          "application-status-message",
+          error.message?.startsWith("Please sign in")
+            ? error.message
+            : friendlyError(error)
+        );
+
+        deleteButton.disabled = false;
       }
+    });
 
-      await remove(
-        ref(db, `applications/${user.uid}/${child.key}`)
-      );
+    details.appendChild(document.createTextNode(" "));
+    details.appendChild(deleteButton);
+  }
 
-      showMessage(
-        "application-status-message",
-        "Application deleted successfully."
-      );
-    } catch (error) {
-      console.error("Application deletion failed:", error);
-
-      showMessage(
-        "application-status-message",
-        error.message?.startsWith("Please sign in")
-          ? error.message
-          : friendlyError(error)
-      );
-
-      deleteButton.disabled = false;
-    }
-  });
-
-  details.appendChild(document.createTextNode(" "));
-  details.appendChild(deleteButton);
-}
+  statusList?.appendChild(item);
+});
 
         // Confirm the same student is still signed in.
         if (
@@ -415,7 +415,28 @@ applicationForm?.addEventListener("submit", async event => {
       `applications/${currentUser.uid}`
     );
 
-  
+    const existingSnapshot = await get(applicationsRef);
+    let duplicateApplication = false;
+
+    existingSnapshot.forEach(child => {
+      const existingApplication = child.val();
+
+      if (
+        existingApplication.hostelId === hostelId &&
+        (existingApplication.status || "pending") === "pending"
+      ) {
+        duplicateApplication = true;
+      }
+    });
+
+    if (duplicateApplication) {
+      showMessage(
+        "application-feedback",
+        "You already have a pending application for this hostel. Please check My Applications."
+      );
+      return;
+    }
+
 const newApplicationRef = push(applicationsRef);
 const applicationReference = newApplicationRef.key;
 

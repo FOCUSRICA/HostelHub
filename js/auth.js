@@ -15,6 +15,7 @@ import {
   get,
   onValue,
   remove,
+  update,
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-database.js";
 

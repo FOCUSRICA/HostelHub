@@ -433,10 +433,11 @@ applicationForm?.addEventListener("submit", async event => {
       return;
     }
 
+
 const newApplicationRef = push(applicationsRef);
 const applicationReference = newApplicationRef.key;
 
-await set(newApplicationRef, {
+const applicationData = {
   reference: applicationReference,
   hostelId,
   hostelName,
@@ -444,7 +445,15 @@ await set(newApplicationRef, {
   phone,
   status: "pending",
   createdAt: serverTimestamp()
+};
+
+await update(ref(db), {
+  [`applications/${currentUser.uid}/${applicationReference}`]:
+    applicationData,
+  [`hostelApplications/${hostelId}/${currentUser.uid}/${applicationReference}`]:
+    applicationData
 });
+
 
 applicationForm.reset();
 populateHostels();

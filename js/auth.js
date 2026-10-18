@@ -359,6 +359,183 @@ byId("signout-button")?.addEventListener("click", async () => {
   }
 });
 
+/* HOSTELHUB ADMIN AND HOSTEL-OWNER DASHBOARD */
+
+const MANAGEMENT_ADMIN_UID = "eaMIxYQqTrZi7mvcE85WvkNfwvF2";
+
+async function loadManagementDashboard(user) {
+  const dashboard = byId("management-dashboard");
+  const list = byId("management-application-list");
+  const title = byId("management-dashboard-title");
+  const message = byId("management-dashboard-message");
+
+  if (!dashboard || !list || !title || !message) return;
+
+  dashboard.hidden = true;
+  list.replaceChildren();
+
+  if (!user) return;
+
+  const isAdmin = user.uid === MANAGEMENT_ADMIN_UID;
+
+  dashboard.hidden = false;
+  title.textContent = isAdmin
+    ? "Administrator: All applications"
+    : "Hostel owner: Your applications";
+
+  message.textContent = "Loading applications...";
+
+  try {
+    const records = [];
+
+    if (isAdmin) {
+      const snapshot = await get(ref(db, "applications"));
+
+      snapshot.forEach(studentSnapshot => {
+        studentSnapshot.forEach(applicationSnapshot => {
+          records.push({
+            studentUid: studentSnapshot.key,
+            applicationId: applicationSnapshot.key,
+            application: applicationSnapshot.val()
+          });
+        });
+      });
+    } else {
+      const cards = [...document.querySelectorAll(".hostel-card")];
+
+      for (const card of cards) {
+        const heading = card.querySelector("h3");
+        if (!heading) continue;
+
+        const hostelName = heading.textContent.trim();
+        const hostelId = card.dataset.id || hostelName;
+
+        let ownerSnapshot;
+
+        try {
+          ownerSnapshot = await get(
+            ref(db, `hostelOwners/${hostelId}`)
+          );
+        } catch {
+          // This account cannot access this hostel's owner record.
+          continue;
+        }
+
+        if (ownerSnapshot.val()?.ownerUid !== user.uid) continue;
+
+        const applicationsSnapshot = await get(
+          ref(db, `hostelApplications/${hostelId}`)
+        );
+
+        applicationsSnapshot.forEach(studentSnapshot => {
+          studentSnapshot.forEach(applicationSnapshot => {
+            records.push({
+              studentUid: studentSnapshot.key,
+              applicationId: applicationSnapshot.key,
+              application: applicationSnapshot.val()
+            });
+          });
+        });
+      }
+    }
+
+    if (auth.currentUser?.uid !== user.uid) return;
+
+    if (records.length === 0) {
+      message.textContent = isAdmin
+        ? "No applications have been submitted yet."
+        : "No applications found for your assigned hostels. Your hostel must be assigned to your account first.";
+      return;
+    }
+
+    message.textContent = `${records.length} application(s) found.`;
+
+    records.forEach(record => {
+      const app = record.application;
+      const hostelId = app.hostelId || "";
+      const status = app.status || "pending";
+
+      const item = document.createElement("article");
+      item.className = "management-application-item";
+
+      const heading = document.createElement("h4");
+      heading.textContent = app.hostelName || "Accommodation application";
+
+      const details = document.createElement("p");
+      details.textContent =
+        `Student: ${app.fullName || "Not provided"} · ` +
+        `Phone: ${app.phone || "Not provided"} · ` +
+        `Reference: ${app.reference || record.applicationId}`;
+
+      const statusLine = document.createElement("p");
+      statusLine.textContent = `Status: ${status}`;
+
+      item.append(heading, details, statusLine);
+
+      if (status === "pending") {
+        ["approved", "rejected"].forEach(nextStatus => {
+          const button = document.createElement("button");
+          button.type = "button";
+          button.className = "button";
+          button.textContent =
+            nextStatus === "approved" ? "Approve" : "Reject";
+
+          button.addEventListener("click", async () => {
+            if (auth.currentUser?.uid !== user.uid) {
+              message.textContent = "Please sign in again.";
+              return;
+            }
+
+            const confirmed = window.confirm(
+              `${nextStatus === "approved" ? "Approve" : "Reject"} ` +
+              `the application for ${app.fullName || "this student"}?`
+            );
+
+            if (!confirmed) return;
+
+            button.disabled = true;
+            message.textContent = "Updating application status...";
+
+            try {
+              await update(ref(db), {
+                [`applications/${record.studentUid}/${record.applicationId}/status`]:
+                  nextStatus,
+                [`hostelApplications/${hostelId}/${record.studentUid}/${record.applicationId}/status`]:
+                  nextStatus
+              });
+
+              message.textContent =
+                `Application ${nextStatus} successfully.`;
+
+              await loadManagementDashboard(auth.currentUser);
+            } catch (error) {
+              console.error("Application status update failed:", error);
+              message.textContent =
+                "Unable to update the status. Check your permissions and try again.";
+              button.disabled = false;
+            }
+          });
+
+          item.appendChild(button);
+        });
+      }
+
+      list.appendChild(item);
+    });
+  } catch (error) {
+    console.error("Management dashboard failed to load:", error);
+    message.textContent =
+      "Unable to load management applications. Check your Firebase permissions.";
+  }
+}
+
+/* Refresh the management dashboard when the user signs in or out. */
+onAuthStateChanged(auth, user => {
+  loadManagementDashboard(user);
+});
+
+/* END HOSTELHUB MANAGEMENT DASHBOARD */
+
 /* Submit an application for the authenticated student. */
 applicationForm?.addEventListener("submit", async event => {
   event.preventDefault();

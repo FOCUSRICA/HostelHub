@@ -227,8 +227,9 @@ onAuthStateChanged(auth, user => {
           heading.textContent =
             application.hostelName || "Accommodation application";
 
-          details.textContent =
-            `Status: ${application.status || "pending"}`;
+         
+details.textContent =
+  `Reference: ${application.reference || child.key} · Status: ${application.status || "pending"}`;
 
           item.append(heading, details);
           statusList?.appendChild(item);

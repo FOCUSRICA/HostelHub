@@ -2884,3 +2884,27 @@ width: 100%;
     padding-top: 90px;
   }
 }
+
+/* HOSTELHUB — application deletion button */
+.application-delete-button {
+  margin-top: 10px;
+  padding: 9px 14px;
+  border: 1px solid #d93670;
+  border-radius: 9px;
+  background: #ffffff;
+  color: #bd245b;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.application-delete-button:hover {
+  background: #fff0f5;
+}
+
+.application-delete-button:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}

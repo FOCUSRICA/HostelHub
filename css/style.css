@@ -2908,3 +2908,34 @@ width: 100%;
   opacity: 0.6;
   cursor: wait;
 }
+
+/* HOSTELHUB — compact delete symbol */
+.application-delete-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  margin-left: 5px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: #d93670;
+  font-family: Arial, sans-serif;
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 1;
+  vertical-align: middle;
+  cursor: pointer;
+}
+
+.application-delete-button:hover {
+  background: #fff0f5;
+  color: #bd245b;
+}
+
+.application-delete-button:disabled {
+  opacity: 0.5;
+  cursor: wait;
+}

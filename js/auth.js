@@ -313,24 +313,28 @@ applicationForm?.addEventListener("submit", async event => {
       `applications/${currentUser.uid}`
     );
 
-    const newApplicationRef = push(applicationsRef);
+  
+const newApplicationRef = push(applicationsRef);
+const applicationReference = newApplicationRef.key;
 
-    await set(newApplicationRef, {
-      hostelId,
-      hostelName,
-      fullName,
-      phone,
-      status: "pending",
-      createdAt: serverTimestamp()
-    });
+await set(newApplicationRef, {
+  reference: applicationReference,
+  hostelId,
+  hostelName,
+  fullName,
+  phone,
+  status: "pending",
+  createdAt: serverTimestamp()
+});
 
-    applicationForm.reset();
-    populateHostels();
+applicationForm.reset();
+populateHostels();
 
-    showMessage(
-      "application-feedback",
-      "Application submitted successfully! Your status is pending review."
-    );
+showMessage(
+  "application-feedback",
+  `Application submitted successfully! Your reference number is ${applicationReference}. Status: Pending review.`
+);
+
   } catch (error) {
     console.error("Application submission failed:", error);
 

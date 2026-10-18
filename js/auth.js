@@ -235,25 +235,62 @@ snapshot.forEach(child => {
   item.append(heading, details);
 
   // Only show the delete button for pending applications.
-  if ((application.status || "pending") === "pending") {
-    const deleteButton = document.createElement("button");
+ 
+if ((application.status || "pending") === "pending") {
+  const deleteButton = document.createElement("button");
 
-    deleteButton.type = "button";
-    deleteButton.textContent = "Delete application";
-    deleteButton.className = "application-delete-button";
+  deleteButton.type = "button";
+  deleteButton.textContent = "×";
+  deleteButton.className = "application-delete-button";
+  deleteButton.setAttribute("aria-label", "Delete application");
+  deleteButton.title = "Delete application";
 
-    deleteButton.addEventListener("click", async () => {
-      const confirmed = window.confirm(
-        `Delete your application for "${application.hostelName || "this hostel"}"? This cannot be undone.`
+  deleteButton.addEventListener("click", async () => {
+    const confirmed = window.confirm(
+      `Delete your application for "${application.hostelName || "this hostel"}"? This cannot be undone.`
+    );
+
+    if (!confirmed) return;
+
+    deleteButton.disabled = true;
+
+    try {
+      await authReady;
+
+      if (
+        !auth.currentUser ||
+        auth.currentUser.uid !== user.uid
+      ) {
+        throw new Error(
+          "Please sign in again before deleting this application."
+        );
+      }
+
+      await remove(
+        ref(db, `applications/${user.uid}/${child.key}`)
       );
 
-      if (!confirmed) return;
+      showMessage(
+        "application-status-message",
+        "Application deleted successfully."
+      );
+    } catch (error) {
+      console.error("Application deletion failed:", error);
 
-      deleteButton.disabled = true;
-      deleteButton.textContent = "Deleting...";
+      showMessage(
+        "application-status-message",
+        error.message?.startsWith("Please sign in")
+          ? error.message
+          : friendlyError(error)
+      );
 
-      try {
-        await authReady;
+      deleteButton.disabled = false;
+    }
+  });
+
+  details.appendChild(document.createTextNode(" "));
+  details.appendChild(deleteButton);
+}
 
         // Confirm the same student is still signed in.
         if (

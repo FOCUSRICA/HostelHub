@@ -2909,25 +2909,26 @@ width: 100%;
   cursor: wait;
 }
 
-/* HOSTELHUB — compact delete symbol */
+/* HOSTELHUB — bin icon for deleting applications */
 .application-delete-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 22px;
-  height: 22px;
+  width: 28px;
+  height: 28px;
   margin-left: 5px;
   padding: 0;
   border: none;
-  border-radius: 50%;
+  border-radius: 7px;
   background: transparent;
   color: #d93670;
-  font-family: Arial, sans-serif;
-  font-size: 20px;
-  font-weight: 500;
-  line-height: 1;
   vertical-align: middle;
   cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.application-delete-button svg {
+  display: block;
 }
 
 .application-delete-button:hover {
@@ -2935,7 +2936,13 @@ width: 100%;
   color: #bd245b;
 }
 
+.application-delete-button:focus-visible {
+  outline: 2px solid #d93670;
+  outline-offset: 2px;
+}
+
 .application-delete-button:disabled {
   opacity: 0.5;
   cursor: wait;
 }
+

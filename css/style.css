@@ -2865,3 +2865,22 @@ width: 100%;
     display: none !important;
   }
 }
+
+/* HOSTELHUB — KEEP NAVIGATION VISIBLE WHILE SCROLLING */
+@media (min-width: 761px) {
+  .site-header {
+    position: fixed !important;
+    top: 12px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    width: calc(100% - 40px) !important;
+    max-width: 1240px !important;
+    z-index: 9999 !important;
+    box-sizing: border-box !important;
+    margin: 0 !important;
+  }
+
+  body {
+    padding-top: 90px;
+  }
+}

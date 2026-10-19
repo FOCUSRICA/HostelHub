@@ -388,19 +388,51 @@ async function loadManagementDashboard(user) {
   try {
     const records = [];
 
-    if (isAdmin) {
-      const snapshot = await get(ref(db, "applications"));
+if (isAdmin) {
+  const snapshot = await get(ref(db, "applications"));
+  const missingCopies = {};
 
-      snapshot.forEach(studentSnapshot => {
-        studentSnapshot.forEach(applicationSnapshot => {
-          records.push({
-            studentUid: studentSnapshot.key,
-            applicationId: applicationSnapshot.key,
-            application: applicationSnapshot.val()
-          });
-        });
+  snapshot.forEach(studentSnapshot => {
+    studentSnapshot.forEach(applicationSnapshot => {
+      const application = applicationSnapshot.val();
+      const studentUid = studentSnapshot.key;
+      const applicationId = applicationSnapshot.key;
+
+      records.push({
+        studentUid,
+        applicationId,
+        application
       });
-    } else {
+
+      // Prepare a copy only when the owner-side record is missing.
+      const hostelId = application?.hostelId;
+
+      if (hostelId) {
+        missingCopies[
+          `hostelApplications/${hostelId}/${studentUid}/${applicationId}`
+        ] = application;
+      }
+    });
+  });
+
+  // Preserve existing owner-side records and their statuses.
+  for (const path of Object.keys(missingCopies)) {
+    const existing = await get(ref(db, path));
+
+    if (existing.exists()) {
+      delete missingCopies[path];
+    }
+  }
+
+  // Backfill only missing legacy records.
+  if (Object.keys(missingCopies).length > 0) {
+    await update(ref(db), missingCopies);
+    console.log(
+      "HostelHub: Older application records copied:",
+      Object.keys(missingCopies).length
+    );
+  }
+} else {
       const cards = [...document.querySelectorAll(".hostel-card")];
 console.log("HOSTELHUB DEBUG: Owner dashboard running");
 console.log("HOSTELHUB DEBUG: Signed-in UID:", user.uid);

@@ -412,31 +412,46 @@ console.log("HOSTELHUB DEBUG: Hostel cards found:", cards.length);
         const hostelName = heading.textContent.trim();
         const hostelId = card.dataset.id || hostelName;
         console.log("HOSTELHUB DEBUG: Checking hostel ID:", hostelId);
-        let ownerSnapshot;
+     
+let ownerSnapshot;
 
-        try {
-          console.log("HOSTELHUB DEBUG: Starting database read:", hostelId);
+try {
+  console.log(
+    "HOSTELHUB DEBUG: Starting database read:",
+    hostelId
+  );
 
-const ownerRead = get(
-  ref(db, `hostelOwners/${hostelId}`)
-);
+  const ownerRead = get(
+    ref(db, `hostelOwners/${hostelId}`)
+  );
 
-const timeoutRead = new Promise((_, reject) => {
-  setTimeout(() => {
-    reject(new Error("Database read timed out after 10 seconds"));
-  }, 10000);
-});
+  const timeoutRead = new Promise((_, reject) => {
+    setTimeout(() => {
+      reject(new Error("Database read timed out after 10 seconds"));
+    }, 10000);
+  });
 
-ownerSnapshot = await Promise.race([
-  ownerRead,
-  timeoutRead
-]);
+  ownerSnapshot = await Promise.race([
+    ownerRead,
+    timeoutRead
+  ]);
 
-console.log("HOSTELHUB DEBUG: Database read completed:", hostelId);
-        } catch {
-          // This account cannot access this hostel's owner record.
-          continue;
-        }
+  console.log(
+    "HOSTELHUB DEBUG: Owner record received:",
+    hostelId,
+    ownerSnapshot.val()
+  );
+
+} catch (error) {
+  console.error(
+    "HOSTELHUB DEBUG: Owner record read failed:",
+    hostelId,
+    error.code || "",
+    error.message
+  );
+
+  continue;
+}
 
         console.log("HOSTELHUB DEBUG: Owner record:", ownerSnapshot.val());
 

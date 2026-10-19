@@ -601,7 +601,11 @@ applicationForm?.addEventListener("submit", async event => {
     );
     return;
   }
+  const successPanel = byId("application-success");
 
+  if (successPanel) {
+    successPanel.hidden = true;
+  }
   submittingApplication = true;
 
   const submitButton =
@@ -669,13 +673,29 @@ await update(ref(db), {
 });
 
 
-applicationForm.reset();
-populateHostels();
 
-showMessage(
-  "application-feedback",
-  `Application submitted successfully! Your reference number is ${applicationReference}. Status: Pending review.`
-);
+    applicationForm.reset();
+    populateHostels();
+
+    const successPanel = byId("application-success");
+    const referenceElement = byId("application-success-reference");
+
+    if (referenceElement) {
+      referenceElement.textContent = applicationReference;
+    }
+
+    if (successPanel) {
+      successPanel.hidden = false;
+      successPanel.scrollIntoView({
+        behavior: "smooth",
+        block: "center"
+      });
+    }
+
+    showMessage(
+      "application-feedback",
+      `Application submitted successfully! Reference: ${applicationReference}`
+    );
 
   } catch (error) {
     console.error("Application submission failed:", error);
@@ -720,4 +740,11 @@ byId("dialog-apply")?.addEventListener("click", () => {
     );
   }
 });
+/* Dismiss the application success confirmation. */
+byId("application-success-dismiss")?.addEventListener("click", () => {
+  const successPanel = byId("application-success");
 
+  if (successPanel) {
+    successPanel.hidden = true;
+  }
+});

@@ -402,14 +402,16 @@ async function loadManagementDashboard(user) {
       });
     } else {
       const cards = [...document.querySelectorAll(".hostel-card")];
-
+console.log("HOSTELHUB DEBUG: Owner dashboard running");
+console.log("HOSTELHUB DEBUG: Signed-in UID:", user.uid);
+console.log("HOSTELHUB DEBUG: Hostel cards found:", cards.length);
       for (const card of cards) {
         const heading = card.querySelector("h3");
         if (!heading) continue;
 
         const hostelName = heading.textContent.trim();
         const hostelId = card.dataset.id || hostelName;
-
+        console.log("HOSTELHUB DEBUG: Checking hostel ID:", hostelId);
         let ownerSnapshot;
 
         try {
@@ -421,7 +423,12 @@ async function loadManagementDashboard(user) {
           continue;
         }
 
-        if (ownerSnapshot.val()?.ownerUid !== user.uid) continue;
+        console.log("HOSTELHUB DEBUG: Owner record:", ownerSnapshot.val());
+
+if (ownerSnapshot.val()?.ownerUid !== user.uid) {
+  console.log("HOSTELHUB DEBUG: Owner UID does not match.");
+  continue;
+}
 
         const applicationsSnapshot = await get(
           ref(db, `hostelApplications/${hostelId}`)

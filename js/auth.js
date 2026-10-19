@@ -606,6 +606,11 @@ applicationForm?.addEventListener("submit", async event => {
   if (successPanel) {
     successPanel.hidden = true;
   }
+    const successPanel = byId("application-success");
+
+  if (successPanel) {
+    successPanel.hidden = true;
+  }
   submittingApplication = true;
 
   const submitButton =
@@ -673,7 +678,6 @@ await update(ref(db), {
 });
 
 
-
     applicationForm.reset();
     populateHostels();
 
@@ -696,6 +700,7 @@ await update(ref(db), {
       "application-feedback",
       `Application submitted successfully! Reference: ${applicationReference}`
     );
+
 
   } catch (error) {
     console.error("Application submission failed:", error);

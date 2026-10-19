@@ -601,16 +601,13 @@ applicationForm?.addEventListener("submit", async event => {
     );
     return;
   }
+ 
   const successPanel = byId("application-success");
 
   if (successPanel) {
     successPanel.hidden = true;
   }
-    const successPanel = byId("application-success");
 
-  if (successPanel) {
-    successPanel.hidden = true;
-  }
   submittingApplication = true;
 
   const submitButton =

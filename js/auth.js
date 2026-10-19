@@ -602,11 +602,11 @@ applicationForm?.addEventListener("submit", async event => {
     return;
   }
  
-  const successPanel = byId("application-success");
+const applicationSuccessPanel = byId("application-success");
 
-  if (successPanel) {
-    successPanel.hidden = true;
-  }
+if (applicationSuccessPanel) {
+  applicationSuccessPanel.hidden = true;
+}
 
   submittingApplication = true;
 
@@ -683,13 +683,13 @@ await update(ref(db), {
       referenceElement.textContent = applicationReference;
     }
 
-    if (successPanel) {
-      successPanel.hidden = false;
-      successPanel.scrollIntoView({
-        behavior: "smooth",
-        block: "center"
-      });
-    }
+   if (applicationSuccessPanel) {
+  applicationSuccessPanel.hidden = false;
+  applicationSuccessPanel.scrollIntoView({
+    behavior: "smooth",
+    block: "center"
+  });
+} 
 
     showMessage(
       "application-feedback",

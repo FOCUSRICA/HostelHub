@@ -276,7 +276,34 @@
 
       <p id="application-feedback" role="status"
         aria-live="polite"></p>
+  
     </form>
+
+    <!-- Application success confirmation -->
+    <div id="application-success"
+         class="application-success"
+         role="status"
+         aria-live="polite"
+         hidden>
+      <div class="application-success-icon" aria-hidden="true">✓</div>
+      <h3>Application submitted successfully!</h3>
+      <p>Your application has been saved. Keep your reference number for future enquiries.</p>
+
+      <div class="application-reference-box">
+        <span>Application reference</span>
+        <strong id="application-success-reference"></strong>
+      </div>
+
+      <p class="application-success-status">
+        Current status: <strong>Pending review</strong>
+      </p>
+
+      <button type="button"
+              id="application-success-dismiss"
+              class="button button-primary">
+        Done
+      </button>
+    </div>
 
     <div class="application-divider"></div>
 

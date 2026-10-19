@@ -681,9 +681,7 @@ await update(ref(db), {
     applicationForm.reset();
     populateHostels();
 
-    const successPanel = byId("application-success");
-    const referenceElement = byId("application-success-reference");
-
+   const referenceElement = byId("application-success-reference");
     if (referenceElement) {
       referenceElement.textContent = applicationReference;
     }

@@ -415,9 +415,24 @@ console.log("HOSTELHUB DEBUG: Hostel cards found:", cards.length);
         let ownerSnapshot;
 
         try {
-          ownerSnapshot = await get(
-            ref(db, `hostelOwners/${hostelId}`)
-          );
+          console.log("HOSTELHUB DEBUG: Starting database read:", hostelId);
+
+const ownerRead = get(
+  ref(db, `hostelOwners/${hostelId}`)
+);
+
+const timeoutRead = new Promise((_, reject) => {
+  setTimeout(() => {
+    reject(new Error("Database read timed out after 10 seconds"));
+  }, 10000);
+});
+
+ownerSnapshot = await Promise.race([
+  ownerRead,
+  timeoutRead
+]);
+
+console.log("HOSTELHUB DEBUG: Database read completed:", hostelId);
         } catch {
           // This account cannot access this hostel's owner record.
           continue;

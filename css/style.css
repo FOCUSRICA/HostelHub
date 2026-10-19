@@ -2946,3 +2946,182 @@ width: 100%;
   cursor: wait;
 }
 
+/* HOSTELHUB — STUDENT APPLICATION EXPERIENCE */
+
+.application-section {
+  padding: 72px 20px;
+}
+
+.application-inner {
+  width: 100%;
+  max-width: 680px;
+  margin: 0 auto;
+}
+
+.application-inner > h2 {
+  margin-bottom: 12px;
+  line-height: 1.2;
+  letter-spacing: -0.035em;
+}
+
+.application-inner .signin-description {
+  color: #64748b;
+  line-height: 1.7;
+  margin-bottom: 24px;
+}
+
+#application-login-note,
+#application-status-message {
+  color: #64748b;
+  line-height: 1.6;
+}
+
+#application-form {
+  margin-top: 24px;
+  padding: 26px;
+  background: #ffffff;
+  border: 1px solid #e8eaf0;
+  border-radius: 18px;
+  box-shadow: 0 10px 32px rgba(15, 23, 42, 0.05);
+}
+
+#application-form[hidden],
+#application-success[hidden] {
+  display: none !important;
+}
+
+#application-form .form-group {
+  margin-bottom: 22px;
+}
+
+#application-form label {
+  display: block;
+  margin-bottom: 8px;
+  color: #253047;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+#application-form input,
+#application-form select {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 48px;
+  padding: 12px 14px;
+  border: 1px solid #d9deea;
+  border-radius: 10px;
+  background: #fff;
+  color: #20283a;
+  font: inherit;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+#application-form input:focus,
+#application-form select:focus {
+  outline: none;
+  border-color: #d93670;
+  box-shadow: 0 0 0 3px rgba(217, 54, 112, 0.12);
+}
+
+#application-form button[type="submit"] {
+  width: 100%;
+  min-height: 48px;
+  margin-top: 4px;
+}
+
+#application-form button:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+#application-feedback {
+  margin: 16px 0 0;
+  font-size: 14px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+.application-success {
+  margin-top: 24px;
+  padding: 28px;
+  border: 1px solid #d6eadf;
+  border-radius: 18px;
+  background: #f6fbf8;
+  color: #253047;
+}
+
+.application-success-icon {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  margin-bottom: 16px;
+  border-radius: 50%;
+  background: #dff3e7;
+  color: #187044;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.application-success h3 {
+  margin: 0 0 12px;
+  line-height: 1.35;
+}
+
+.application-success p {
+  line-height: 1.7;
+}
+
+.application-reference-box {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 20px 0;
+  padding: 16px;
+  border: 1px dashed #b8d9c6;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.application-reference-box span {
+  color: #64748b;
+  font-size: 13px;
+}
+
+.application-reference-box strong {
+  color: #bd245b;
+  overflow-wrap: anywhere;
+  font-size: 16px;
+}
+
+.application-success-status {
+  font-size: 14px;
+}
+
+.application-success #application-success-dismiss {
+  min-height: 44px;
+  margin-top: 8px;
+}
+
+#application-status-list {
+  padding-left: 22px;
+}
+
+#application-status-list li {
+  margin-bottom: 16px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 600px) {
+  .application-section {
+    padding: 48px 16px;
+  }
+
+  #application-form,
+  .application-success {
+    padding: 20px;
+    border-radius: 14px;
+  }
+}
+

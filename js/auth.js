@@ -1,23 +1,5 @@
 
-import { auth, db, authReady } from "./firebase.js";
-
-import {
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  onAuthStateChanged,
-  signOut
-} from "https://www.gstatic.com/firebasejs/13.0.0/firebase-auth.js";
-
-import {
-  ref,
-  push,
-  set,
-  get,
-  onValue,
-  remove,
-  update,
-  serverTimestamp
-} from "https://www.gstatic.com/firebasejs/13.0.0/firebase-database.js";
+import { supabase } from "./supabase.js";
 
 const byId = id => document.getElementById(id);
 
@@ -31,64 +13,71 @@ const studentAccount = byId("student-account");
 const applicationLoginNote = byId("application-login-note");
 
 let currentUser = null;
-let stopApplicationListener = null;
-let submittingApplication = false;
 
-function showMessage(id, message) {
+function message(id, text) {
   const element = byId(id);
-  if (element) element.textContent = message;
+  if (element) element.textContent = text;
 }
 
-function friendlyError(error) {
-  const messages = {
-    "auth/email-already-in-use": "An account already exists for this email. Please sign in.",
-    "auth/invalid-email": "Enter a valid email address.",
-    "auth/invalid-credential": "Email or password is incorrect.",
-    "auth/weak-password": "Choose a stronger password with at least 6 characters.",
-    "auth/too-many-requests": "Too many attempts. Please wait and try again.",
-    "auth/network-request-failed": "Network error. Check your internet connection.",
-    "auth/operation-not-allowed": "Email/Password sign-in is not enabled in Firebase.",
-    "PERMISSION_DENIED": "Access denied by the database security rules."
-  };
+function errorMessage(error) {
+  console.error(error);
+  const text = (error?.message || "").toLowerCase();
 
-  return messages[error.code] ||
-    "Something went wrong. Please try again.";
+  if (text.includes("invalid login credentials")) {
+    return "Email or password is incorrect.";
+  }
+  if (text.includes("already registered")) {
+    return "This email may already be registered. Please sign in.";
+  }
+  if (text.includes("row-level security") || text.includes("permission denied")) {
+    return "Access denied by database security settings.";
+  }
+
+  return error?.message || "Something went wrong. Please try again.";
 }
 
-/* Fill the hostel dropdown using existing listing cards. */
-function populateHostels() {
+/* Load real active hostels from Supabase. */
+async function populateHostels() {
   if (!applicationHostel) return;
 
-  const previousValue = applicationHostel.value;
-  const listings = [...document.querySelectorAll(".hostel-card")];
+  applicationHostel.replaceChildren(
+    new Option("Loading hostels...", "")
+  );
+
+  const { data, error } = await supabase
+    .from("hostels")
+    .select("id, name")
+    .eq("is_active", true)
+    .order("name");
 
   applicationHostel.replaceChildren(
     new Option("Choose a hostel", "")
   );
 
-  listings.forEach(card => {
-    const heading = card.querySelector("h3");
-    if (!heading) return;
+  if (error) {
+    message("application-feedback", errorMessage(error));
+    return;
+  }
 
-    const name = heading.textContent.trim();
-    const id = card.dataset.id || name;
+  if (!data || data.length === 0) {
+    applicationHostel.replaceChildren(
+      new Option("No live hostels available yet", "")
+    );
+    message(
+      "application-feedback",
+      "No live hostel listings are available yet."
+    );
+    return;
+  }
 
+  data.forEach(hostel => {
     applicationHostel.add(
-      new Option(name, id)
+      new Option(hostel.name, hostel.id)
     );
   });
-
-  if ([...applicationHostel.options].some(
-    option => option.value === previousValue
-  )) {
-    applicationHostel.value = previousValue;
-  }
 }
 
-populateHostels();
-
-
-/* Register first, then require manual sign-in. */
+/* Register a new student account. */
 registerForm?.addEventListener("submit", async event => {
   event.preventDefault();
 
@@ -96,87 +85,122 @@ registerForm?.addEventListener("submit", async event => {
   const password = byId("register-password")?.value;
 
   if (!email || !password) {
-    showMessage(
+    message("register-feedback", "Enter your email and password.");
+    return;
+  }
+
+  message("register-feedback", "Creating account...");
+
+  try {
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password
+    });
+
+    if (error) throw error;
+
+    if (data.session) {
+      const { error: signOutError } =
+        await supabase.auth.signOut();
+
+      if (signOutError) throw signOutError;
+    }
+
+    registerForm.reset();
+
+    message(
       "register-feedback",
-      "Please enter your email and password."
+      data.session
+        ? "Registration successful. Please sign in."
+        : "Registration received. Check your email if confirmation is required, then sign in."
+    );
+  } catch (error) {
+    message("register-feedback", errorMessage(error));
+  }
+});
+
+/* Sign in. */
+signInForm?.addEventListener("submit", async event => {
+  event.preventDefault();
+
+  const email = byId("signin-email")?.value.trim();
+  const password = byId("signin-password")?.value;
+
+  if (!email || !password) {
+    message("signin-feedback", "Enter your email and password.");
+    return;
+  }
+
+  message("signin-feedback", "Signing in...");
+
+  try {
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password
+    });
+
+    if (error) throw error;
+
+    signInForm.reset();
+    message("signin-feedback", "Signed in successfully.");
+  } catch (error) {
+    message("signin-feedback", errorMessage(error));
+  }
+});
+
+/* Load a student's applications. */
+async function loadApplications(user) {
+  const list = byId("application-status-list");
+
+  if (list) list.replaceChildren();
+
+  message("application-status-message", "Loading applications...");
+
+  const { data, error } = await supabase
+    .from("applications")
+    .select("id, reference, status, created_at, hostels(name)")
+    .eq("student_id", user.id)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    message("application-status-message", errorMessage(error));
+    return;
+  }
+
+  if (!data || data.length === 0) {
+    message(
+      "application-status-message",
+      "You have not submitted any applications yet."
     );
     return;
   }
 
-  showMessage("register-feedback", "Creating your account...");
+  data.forEach(application => {
+    const item = document.createElement("li");
+    const heading = document.createElement("strong");
+    const details = document.createElement("p");
 
-  try {
-    await authReady;
+    const hostel = Array.isArray(application.hostels)
+      ? application.hostels[0]
+      : application.hostels;
 
-    // Create the student's Firebase account.
-    const credential = await createUserWithEmailAndPassword(
-      auth,
-      email,
-      password
-    );
+    heading.textContent = hostel?.name || "Accommodation application";
+    details.textContent =
+      `Reference: ${application.reference} · Status: ${application.status}`;
 
-    // Firebase signs the student in automatically.
-    // Sign them out so they must use the Sign In form.
-    await signOut(credential.user);
+    item.append(heading, details);
+    list?.appendChild(item);
+  });
 
-    registerForm.reset();
+  message(
+    "application-status-message",
+    "Your application records are up to date."
+  );
+}
 
-    showMessage(
-      "register-feedback",
-      "Registration successful! Please sign in with your email and password."
-    );
-
-    // Return to the Sign In section.
-    byId("signin-form")?.scrollIntoView({
-      behavior: "smooth",
-      block: "center"
-    });
-
-    byId("signin-email")?.focus();
-
-  } catch (error) {
-    console.error("Registration failed:", error);
-
-    showMessage(
-      "register-feedback",
-      friendlyError(error)
-    );
-  }
-});
-
-/* Student sign-in. */
-signInForm?.addEventListener("submit", async event => {
-  event.preventDefault();
-
-  const email = byId("signin-email").value.trim();
-  const password = byId("signin-password").value;
-
-  showMessage("signin-feedback", "Signing in...");
-
-  try {
-    await authReady;
-    await signInWithEmailAndPassword(auth, email, password);
-
-    signInForm.reset();
-    showMessage("signin-feedback", "Signed in successfully.");
-  } catch (error) {
-    console.error("Sign-in failed:", error);
-    showMessage("signin-feedback", friendlyError(error));
-  }
-});
-
-
-/* Restore the authenticated student session. */
-await authReady;
-
-onAuthStateChanged(auth, user => {
-  currentUser = user;
-
-  if (stopApplicationListener) {
-    stopApplicationListener();
-    stopApplicationListener = null;
-  }
-
+/* Update the account interface when signed in or out. */
+async function updateAccount(user) {
+  currentUser = user || null;
   const signedIn = Boolean(user);
 
   if (authForms) authForms.hidden = signedIn;
@@ -184,578 +208,131 @@ onAuthStateChanged(auth, user => {
   if (applicationForm) applicationForm.hidden = !signedIn;
   if (applicationLoginNote) applicationLoginNote.hidden = signedIn;
 
-  showMessage(
+  message(
     "student-email",
     signedIn ? `Signed in as ${user.email || "student"}` : ""
   );
 
-  showMessage(
+  message(
     "account-feedback",
-    signedIn ? "You can now submit and track applications." : ""
+    signedIn ? "You can now track your applications." : ""
   );
 
-  showMessage(
-    "application-status-message",
-    signedIn
-      ? "Loading your applications..."
-      : "Sign in to view your application status."
-  );
+  await populateHostels();
 
-  const statusList = byId("application-status-list");
-
-  if (statusList) {
-    statusList.replaceChildren();
-  }
-
-  if (!user) return;
-
-  const applicationsRef = ref(
-    db,
-    `applications/${user.uid}`
-  );
-
-  stopApplicationListener = onValue(
-    applicationsRef,
-    snapshot => {
-      if (statusList) {
-        statusList.replaceChildren();
-      }
-
-      if (!snapshot.exists()) {
-        showMessage(
-          "application-status-message",
-          "You have not submitted any applications yet."
-        );
-        return;
-      }
-
-      snapshot.forEach(child => {
-        const application = child.val();
-        const item = document.createElement("li");
-        const heading = document.createElement("strong");
-        const details = document.createElement("p");
-
-        heading.textContent =
-          application.hostelName || "Accommodation application";
-
-        details.textContent =
-          `Reference: ${application.reference || child.key} · Status: ${application.status || "pending"}`;
-
-        item.append(heading, details);
-
-        // Allow deletion only for pending applications.
-        if ((application.status || "pending") === "pending") {
-          const deleteButton = document.createElement("button");
-
-          deleteButton.type = "button";
-          deleteButton.innerHTML = `
-  <svg xmlns="http://www.w3.org/2000/svg"
-       width="16" height="16"
-       viewBox="0 0 24 24"
-       fill="none"
-       stroke="currentColor"
-       stroke-width="1.8"
-       stroke-linecap="round"
-       stroke-linejoin="round"
-       aria-hidden="true">
-    <path d="M3 6h18"/>
-    <path d="M8 6V4h8v2"/>
-    <path d="m19 6-1 14H6L5 6"/>
-    <path d="M10 11v5"/>
-    <path d="M14 11v5"/>
-  </svg>
-`;
-          deleteButton.className = "application-delete-button";
-          deleteButton.setAttribute(
-            "aria-label",
-            "Delete application"
-          );
-          deleteButton.title = "Delete application";
-
-          deleteButton.addEventListener("click", async () => {
-            const confirmed = window.confirm(
-              `Delete your application for "${application.hostelName || "this hostel"}"? This cannot be undone.`
-            );
-
-            if (!confirmed) return;
-
-            deleteButton.disabled = true;
-
-            try {
-              await authReady;
-
-              if (
-                !auth.currentUser ||
-                auth.currentUser.uid !== user.uid
-              ) {
-                throw new Error(
-                  "Please sign in again before deleting this application."
-                );
-              }
-
-             
-await update(ref(db), {
-  [`applications/${user.uid}/${child.key}`]: null,
-  [`hostelApplications/${application.hostelId}/${user.uid}/${child.key}`]: null
-});
-
-
-              showMessage(
-                "application-status-message",
-                "Application deleted successfully."
-              );
-
-            } catch (error) {
-              console.error(
-                "Application deletion failed:",
-                error
-              );
-
-              showMessage(
-                "application-status-message",
-                error.message?.startsWith("Please sign in")
-                  ? error.message
-                  : friendlyError(error)
-              );
-
-              deleteButton.disabled = false;
-            }
-          });
-
-          details.appendChild(
-            document.createTextNode(" ")
-          );
-
-          details.appendChild(deleteButton);
-        }
-
-        statusList?.appendChild(item);
-      });
-
-      showMessage(
-        "application-status-message",
-        "Your application records are up to date."
-      );
-    },
-    error => {
-      console.error("Application tracking failed:", error);
-
-      showMessage(
-        "application-status-message",
-        "Unable to load applications. Please refresh and try again."
-      );
-    }
-  );
-});
+  if (user) await loadApplications(user);
+}
 
 /* Sign out. */
 byId("signout-button")?.addEventListener("click", async () => {
-  try {
-    await signOut(auth);
-    showMessage("signin-feedback", "You have signed out.");
-  } catch (error) {
-    console.error("Sign-out failed:", error);
-    showMessage("account-feedback", friendlyError(error));
+  const { error } = await supabase.auth.signOut();
+
+  if (error) {
+    message("account-feedback", errorMessage(error));
+  } else {
+    message("signin-feedback", "You have signed out.");
   }
 });
 
-/* HOSTELHUB ADMIN AND HOSTEL-OWNER DASHBOARD */
-
-const MANAGEMENT_ADMIN_UID = "eaMIxYQqTrZi7mvcE85WvkNfwvF2";
-
-async function loadManagementDashboard(user) {
-  const dashboard = byId("management-dashboard");
-  const list = byId("management-application-list");
-  const title = byId("management-dashboard-title");
-  const message = byId("management-dashboard-message");
-
-  if (!dashboard || !list || !title || !message) return;
-
-  dashboard.hidden = true;
-  list.replaceChildren();
-
-  if (!user) return;
-
-  const isAdmin = user.uid === MANAGEMENT_ADMIN_UID;
-
-  dashboard.hidden = false;
-  title.textContent = isAdmin
-    ? "Administrator: All applications"
-    : "Hostel owner: Your applications";
-
-  message.textContent = "Loading applications...";
-
-  try {
-    const records = [];
-
-if (isAdmin) {
-  const snapshot = await get(ref(db, "applications"));
-  const missingCopies = {};
-
-  snapshot.forEach(studentSnapshot => {
-    studentSnapshot.forEach(applicationSnapshot => {
-      const application = applicationSnapshot.val();
-      const studentUid = studentSnapshot.key;
-      const applicationId = applicationSnapshot.key;
-
-      records.push({
-        studentUid,
-        applicationId,
-        application
-      });
-
-      // Prepare a copy only when the owner-side record is missing.
-      const hostelId = application?.hostelId;
-
-      if (hostelId) {
-        missingCopies[
-          `hostelApplications/${hostelId}/${studentUid}/${applicationId}`
-        ] = application;
-      }
-    });
-  });
-
-  // Preserve existing owner-side records and their statuses.
-  for (const path of Object.keys(missingCopies)) {
-    const existing = await get(ref(db, path));
-
-    if (existing.exists()) {
-      delete missingCopies[path];
-    }
-  }
-
-  // Backfill only missing legacy records.
-  if (Object.keys(missingCopies).length > 0) {
-    await update(ref(db), missingCopies);
-    console.log(
-      "HostelHub: Older application records copied:",
-      Object.keys(missingCopies).length
-    );
-  }
-} else {
-      const cards = [...document.querySelectorAll(".hostel-card")];
-console.log("HOSTELHUB DEBUG: Owner dashboard running");
-console.log("HOSTELHUB DEBUG: Signed-in UID:", user.uid);
-console.log("HOSTELHUB DEBUG: Hostel cards found:", cards.length);
-      for (const card of cards) {
-        const heading = card.querySelector("h3");
-        if (!heading) continue;
-
-        const hostelName = heading.textContent.trim();
-        const hostelId = card.dataset.id || hostelName;
-        console.log("HOSTELHUB DEBUG: Checking hostel ID:", hostelId);
-     
-let ownerSnapshot;
-
-try {
-  console.log(
-    "HOSTELHUB DEBUG: Starting database read:",
-    hostelId
-  );
-
-  const ownerRead = get(
-    ref(db, `hostelOwners/${hostelId}`)
-  );
-
-  const timeoutRead = new Promise((_, reject) => {
-    setTimeout(() => {
-      reject(new Error("Database read timed out after 10 seconds"));
-    }, 10000);
-  });
-
-  ownerSnapshot = await Promise.race([
-    ownerRead,
-    timeoutRead
-  ]);
-
-  console.log(
-    "HOSTELHUB DEBUG: Owner record received:",
-    hostelId,
-    ownerSnapshot.val()
-  );
-
-} catch (error) {
-  console.error(
-    "HOSTELHUB DEBUG: Owner record read failed:",
-    hostelId,
-    error.code || "",
-    error.message
-  );
-
-  continue;
-}
-
-        console.log("HOSTELHUB DEBUG: Owner record:", ownerSnapshot.val());
-
-if (ownerSnapshot.val()?.ownerUid !== user.uid) {
-  console.log("HOSTELHUB DEBUG: Owner UID does not match.");
-  continue;
-}
-
-        const applicationsSnapshot = await get(
-          ref(db, `hostelApplications/${hostelId}`)
-        );
-
-        applicationsSnapshot.forEach(studentSnapshot => {
-          studentSnapshot.forEach(applicationSnapshot => {
-            records.push({
-              studentUid: studentSnapshot.key,
-              applicationId: applicationSnapshot.key,
-              application: applicationSnapshot.val()
-            });
-          });
-        });
-      }
-    }
-
-    if (auth.currentUser?.uid !== user.uid) return;
-
-    if (records.length === 0) {
-      message.textContent = isAdmin
-        ? "No applications have been submitted yet."
-        : "No applications found for your assigned hostels. Your hostel must be assigned to your account first.";
-      return;
-    }
-
-    message.textContent = `${records.length} application(s) found.`;
-
-    records.forEach(record => {
-      const app = record.application;
-      const hostelId = app.hostelId || "";
-      const status = app.status || "pending";
-
-      const item = document.createElement("article");
-      item.className = "management-application-item";
-
-      const heading = document.createElement("h4");
-      heading.textContent = app.hostelName || "Accommodation application";
-
-      const details = document.createElement("p");
-      details.textContent =
-        `Student: ${app.fullName || "Not provided"} · ` +
-        `Phone: ${app.phone || "Not provided"} · ` +
-        `Reference: ${app.reference || record.applicationId}`;
-
-      const statusLine = document.createElement("p");
-      statusLine.textContent = `Status: ${status}`;
-
-      item.append(heading, details, statusLine);
-
-      if (status === "pending") {
-        ["approved", "rejected"].forEach(nextStatus => {
-          const button = document.createElement("button");
-          button.type = "button";
-          button.className = "button";
-          button.textContent =
-            nextStatus === "approved" ? "Approve" : "Reject";
-
-          button.addEventListener("click", async () => {
-            if (auth.currentUser?.uid !== user.uid) {
-              message.textContent = "Please sign in again.";
-              return;
-            }
-
-            const confirmed = window.confirm(
-              `${nextStatus === "approved" ? "Approve" : "Reject"} ` +
-              `the application for ${app.fullName || "this student"}?`
-            );
-
-            if (!confirmed) return;
-
-            button.disabled = true;
-            message.textContent = "Updating application status...";
-
-            try {
-              await update(ref(db), {
-                [`applications/${record.studentUid}/${record.applicationId}/status`]:
-                  nextStatus,
-                [`hostelApplications/${hostelId}/${record.studentUid}/${record.applicationId}/status`]:
-                  nextStatus
-              });
-
-              message.textContent =
-                `Application ${nextStatus} successfully.`;
-
-              await loadManagementDashboard(auth.currentUser);
-            } catch (error) {
-              console.error("Application status update failed:", error);
-              message.textContent =
-                "Unable to update the status. Check your permissions and try again.";
-              button.disabled = false;
-            }
-          });
-
-          item.appendChild(button);
-        });
-      }
-
-      list.appendChild(item);
-    });
-  } catch (error) {
-    console.error("Management dashboard failed to load:", error);
-    message.textContent =
-      "Unable to load management applications. Check your Firebase permissions.";
-  }
-}
-
-/* Refresh the management dashboard when the user signs in or out. */
-onAuthStateChanged(auth, user => {
-  loadManagementDashboard(user);
-});
-
-/* END HOSTELHUB MANAGEMENT DASHBOARD */
-
-/* Submit an application for the authenticated student. */
+/* Submit a student application. */
 applicationForm?.addEventListener("submit", async event => {
   event.preventDefault();
 
-  if (!currentUser || submittingApplication) {
-    showMessage(
-      "application-feedback",
-      "Please sign in before submitting an application."
-    );
+  if (!currentUser) {
+    message("application-feedback", "Please sign in first.");
     return;
   }
 
-  const fullName = byId("application-name").value.trim();
-  const phone = byId("application-phone").value.trim();
-  const hostelId = applicationHostel.value;
-
-  const selectedOption =
-    applicationHostel.selectedOptions[0];
-
-  const hostelName = selectedOption?.textContent || "";
+  const fullName = byId("application-name")?.value.trim();
+  const phone = byId("application-phone")?.value.trim();
+  const hostelId = applicationHostel?.value;
 
   if (!fullName || !phone || !hostelId) {
-    showMessage(
-      "application-feedback",
-      "Complete all fields before submitting."
-    );
+    message("application-feedback", "Complete all fields and choose a hostel.");
     return;
   }
- 
-const applicationSuccessPanel = byId("application-success");
 
-if (applicationSuccessPanel) {
-  applicationSuccessPanel.hidden = true;
-}
-
-  submittingApplication = true;
-
-  const submitButton =
-    applicationForm.querySelector('button[type="submit"]');
-
-  if (submitButton) submitButton.disabled = true;
-
-  showMessage("application-feedback", "Submitting your application...");
+  message("application-feedback", "Submitting application...");
 
   try {
-    await authReady;
+    const { data: sessionData, error: sessionError } =
+      await supabase.auth.getSession();
 
-    // Confirm the user is still signed in.
-    if (!auth.currentUser ||
-        auth.currentUser.uid !== currentUser.uid) {
-      throw new Error("Please sign in again before submitting.");
+    if (sessionError) throw sessionError;
+
+    if (sessionData.session?.user?.id !== currentUser.id) {
+      throw new Error("Please sign in again.");
     }
 
-    const applicationsRef = ref(
-      db,
-      `applications/${currentUser.uid}`
-    );
+    const { data: existing, error: checkError } = await supabase
+      .from("applications")
+      .select("id")
+      .eq("student_id", currentUser.id)
+      .eq("hostel_id", hostelId)
+      .eq("status", "pending")
+      .limit(1);
 
-    const existingSnapshot = await get(applicationsRef);
-    let duplicateApplication = false;
+    if (checkError) throw checkError;
 
-    existingSnapshot.forEach(child => {
-      const existingApplication = child.val();
-
-      if (
-        existingApplication.hostelId === hostelId &&
-        (existingApplication.status || "pending") === "pending"
-      ) {
-        duplicateApplication = true;
-      }
-    });
-
-    if (duplicateApplication) {
-      showMessage(
+    if (existing?.length) {
+      message(
         "application-feedback",
-        "You already have a pending application for this hostel. Please check My Applications."
+        "You already have a pending application for this hostel."
       );
       return;
     }
 
+    const { data, error } = await supabase
+      .from("applications")
+      .insert({
+        student_id: currentUser.id,
+        hostel_id: hostelId,
+        full_name: fullName,
+        phone,
+        status: "pending"
+      })
+      .select("id, reference")
+      .single();
 
-const newApplicationRef = push(applicationsRef);
-const applicationReference = newApplicationRef.key;
+    if (error) throw error;
 
-const applicationData = {
-  reference: applicationReference,
-  hostelId,
-  hostelName,
-  fullName,
-  phone,
-  status: "pending",
-  createdAt: serverTimestamp()
-};
+    const reference = byId("application-success-reference");
+    if (reference) reference.textContent = data.reference;
 
-await update(ref(db), {
-  [`applications/${currentUser.uid}/${applicationReference}`]:
-    applicationData,
-  [`hostelApplications/${hostelId}/${currentUser.uid}/${applicationReference}`]:
-    applicationData
-});
-
-
-    applicationForm.reset();
-    populateHostels();
-
-   const referenceElement = byId("application-success-reference");
-    if (referenceElement) {
-      referenceElement.textContent = applicationReference;
+    const success = byId("application-success");
+    if (success) {
+      success.hidden = false;
+      success.scrollIntoView({
+        behavior: "smooth",
+        block: "center"
+      });
     }
 
-   if (applicationSuccessPanel) {
-  applicationSuccessPanel.hidden = false;
-  applicationSuccessPanel.scrollIntoView({
-    behavior: "smooth",
-    block: "center"
-  });
-} 
+    applicationForm.reset();
 
-    showMessage(
+    message(
       "application-feedback",
-      `Application submitted successfully! Reference: ${applicationReference}`
+      `Application submitted! Reference: ${data.reference}`
     );
 
-
+    await loadApplications(currentUser);
   } catch (error) {
-    console.error("Application submission failed:", error);
-
-    showMessage(
-      "application-feedback",
-      error.message?.startsWith("Please sign in")
-        ? error.message
-        : friendlyError(error)
-    );
-  } finally {
-    submittingApplication = false;
-    if (submitButton) submitButton.disabled = false;
+    message("application-feedback", errorMessage(error));
   }
 });
 
-/* Apply directly from the existing listing details dialog. */
-byId("dialog-apply")?.addEventListener("click", () => {
+/* Apply from the existing listing dialog. */
+byId("dialog-apply")?.addEventListener("click", async () => {
   const dialog = byId("listing-dialog");
   const title = byId("dialog-title")?.textContent?.trim();
 
-  populateHostels();
+  await populateHostels();
 
-  const matchingOption = [...(applicationHostel?.options || [])]
-    .find(option => option.textContent.trim() === title);
+  const option = [...(applicationHostel?.options || [])]
+    .find(item => item.textContent.trim() === title);
 
-  if (matchingOption && applicationHostel) {
-    applicationHostel.value = matchingOption.value;
+  if (option && applicationHostel) {
+    applicationHostel.value = option.value;
   }
 
   dialog?.close();
@@ -766,17 +343,31 @@ byId("dialog-apply")?.addEventListener("click", () => {
   });
 
   if (!currentUser) {
-    showMessage(
+    message(
       "application-feedback",
-      "Please sign in or register first. Your selected hostel will remain available when you return."
+      "Please sign in or register before applying."
     );
   }
 });
-/* Dismiss the application success confirmation. */
-byId("application-success-dismiss")?.addEventListener("click", () => {
-  const successPanel = byId("application-success");
 
-  if (successPanel) {
-    successPanel.hidden = true;
-  }
+/* Dismiss the success panel. */
+byId("application-success-dismiss")?.addEventListener("click", () => {
+  const panel = byId("application-success");
+  if (panel) panel.hidden = true;
+});
+
+/* Restore the existing Supabase session. */
+supabase.auth.onAuthStateChange((_event, session) => {
+  setTimeout(() => {
+    updateAccount(session?.user || null).catch(error => {
+      console.error("Account loading failed:", error);
+    });
+  }, 0);
+});
+
+supabase.auth.getSession().then(({ data, error }) => {
+  if (error) throw error;
+  return updateAccount(data.session?.user || null);
+}).catch(error => {
+  message("signin-feedback", errorMessage(error));
 });
